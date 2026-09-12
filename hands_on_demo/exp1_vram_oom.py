@@ -28,8 +28,16 @@ def main():
     print_banner("Experiment 1: VRAM Capacity Wall (Allocating 12.0 GB Tensor)")
     
     if not torch.cuda.is_available():
-        print("[!] No CUDA GPU detected (running on CPU/macOS).")
-        print("[*] To test on live GPU, run this inside a Lightning AI Studio with H100 or on an RTX 4060 laptop.")
+        print("[!] No CUDA GPU detected in active PyTorch environment.")
+        import shutil
+        if shutil.which("nvidia-smi"):
+            print("\n" + "!" * 76)
+            print("  [!] ATTENTION: NVIDIA GPU detected, but your PyTorch was installed as CPU-only!")
+            print("  [*] To enable your RTX 4060 GPU, run in PowerShell:")
+            print("      pip install --upgrade --force-reinstall torch torchvision --index-url https://download.pytorch.org/whl/cu121")
+            print("!" * 76 + "\n", flush=True)
+        else:
+            print("[*] To test on live GPU, run this inside a Lightning AI Studio with H100 or on an RTX 4060 laptop.")
         gpu_name = "CPU / Emulated Node"
         total_vram = 0.0
     else:

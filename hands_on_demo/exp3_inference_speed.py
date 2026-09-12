@@ -86,6 +86,13 @@ def get_hardware_info():
         total_vram_gb = 0.0
         dtype = torch.float32
         is_cuda = False
+        import shutil
+        if shutil.which("nvidia-smi"):
+            print("\n" + "!" * 76)
+            print("  [!] ATTENTION: NVIDIA GPU detected, but your PyTorch is CPU-only!")
+            print("  [*] To enable your RTX 4060 GPU, run in PowerShell:")
+            print("      pip install --upgrade --force-reinstall torch torchvision --index-url https://download.pytorch.org/whl/cu121")
+            print("!" * 76 + "\n", flush=True)
     return device, gpu_name, total_vram_gb, dtype, is_cuda
 
 
