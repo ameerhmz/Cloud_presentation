@@ -339,6 +339,7 @@ def main():
 
     num_epochs = max(1, math.ceil(total_samples / dataset_len)) if dataset_len > 0 else 1
     samples_remaining = total_samples
+    sample_idx = 0
     global_step = 0
     pbar = None
 
@@ -367,7 +368,7 @@ def main():
 
                 # Prepare batch of samples
                 batch_texts = [
-                    formatted_samples[(global_step * batch_size + i) % len(formatted_samples)]
+                    formatted_samples[(sample_idx + i) % len(formatted_samples)]
                     for i in range(actual_step_samples)
                 ]
 
@@ -428,6 +429,7 @@ def main():
                     print(f"  [Epoch {epoch}/{num_epochs}] Step {step+1}/{epoch_steps} ({current_samples}/{total_samples}) | Loss: {loss.item():.4f} | {ms_per_sample:.1f}ms/smp | {vram_str}")
 
                 global_step += 1
+                sample_idx += actual_step_samples
 
             if pbar:
                 pbar.close()
@@ -445,7 +447,7 @@ def main():
     t_train_total = time.time() - t_train_start
     avg_step_sec = sum(step_times) / len(step_times) if step_times else 0.1
     avg_throughput = total_tokens_processed / t_train_total if t_train_total > 0 else 0
-    total_samples_processed = min(total_samples, len(step_times) * batch_size)
+    total_samples_processed = min(total_samples, sample_idx)
     avg_ms_per_sample = (t_train_total / total_samples_processed * 1000) if total_samples_processed > 0 else 185.0
 
     # 6. Evaluation Generation AFTER Fine-Tuning
@@ -477,7 +479,6 @@ def main():
     # 8. Comparison Telemetry
     h100_ms_per_sample = 6.8  # H100 batch 16 @ ~110ms = 6.8ms/sample
     speedup_factor = max(1.0, avg_ms_per_sample / h100_ms_per_sample)
-    total_samples_processed = min(total_samples, len(step_times) * batch_size)
     h100_equiv_time_sec = total_samples_processed * (h100_ms_per_sample / 1000.0)
     laptop_equiv_time_sec = total_samples_processed * 0.185
 
