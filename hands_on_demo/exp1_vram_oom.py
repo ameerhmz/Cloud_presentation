@@ -60,7 +60,8 @@ def main():
 
     try:
         start_time = time.time()
-        tensor = torch.empty((rows, cols), dtype=torch.float32, device="cuda")
+        # Allocate and physically touch memory pages so the hardware graph reflects full 12 GB
+        tensor = torch.zeros((rows, cols), dtype=torch.float32, device="cuda")
         torch.cuda.synchronize()
         alloc_time = time.time() - start_time
         allocated = torch.cuda.memory_allocated(0) / (1024 ** 3)
@@ -68,6 +69,12 @@ def main():
 
         print(f"[✔] SUCCESS! Allocated {allocated:.2f} GB in {alloc_time*1000:.2f} ms on {gpu_name}!")
         print(f"[✔] Headroom Remaining: {free_vram:.2f} GB FREE for model weights, KV cache, and optimizer!")
+        print(f"\n[*] 📊 Holding 12.0 GB in VRAM for 10 seconds to update Studio UI graph...")
+        for remaining in range(10, 0, -1):
+            print(f"    ⏳ Active in HBM3 VRAM... {remaining}s remaining (check the top-bar RAM/GPU graph!)", end="\r", flush=True)
+            time.sleep(1)
+        print("    ✔ 10s hold complete! Releasing memory back to system pool.                  ")
+
         print("\n" + "-" * 76)
         print("  +-------------------------------------------------------------------+")
         print("  |                  EXPERIMENT 1 RESULT: PASSED                     |")
