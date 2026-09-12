@@ -52,6 +52,13 @@ def parse_args():
         help="Hugging Face Model ID or local path (default: Qwen/Qwen2.5-3B-Instruct [3.09 Billion Parameters])"
     )
     parser.add_argument(
+        "--mode",
+        type=str,
+        default=None,
+        choices=["1", "2", "finetuned", "base"],
+        help="Model choice: '1' or 'finetuned' for custom trained, '2' or 'base' for raw base model"
+    )
+    parser.add_argument(
         "--prompt",
         type=str,
         default=None,
@@ -80,7 +87,6 @@ def get_hardware_info():
         dtype = torch.float32
         is_cuda = False
     return device, gpu_name, total_vram_gb, dtype, is_cuda
-
 
 
 def stream_answer(model, tokenizer, device, prompt_text, max_new_tokens, is_cuda):
@@ -116,25 +122,63 @@ def main():
     args = parse_args()
     device, gpu_name, total_vram_gb, compute_dtype, is_cuda = get_hardware_info()
 
-    print_banner("EXPERIMENT 3: INTERACTIVE CLOUD LLM TERMINAL (QWEN-2.5 3B)")
-    print(f"  Model Scale : 3.09 Billion Parameters")
-    print(f"  Hardware    : {gpu_name}")
+    print_banner("EXPERIMENT 3: INTERACTIVE CLOUD LLM TERMINAL")
+    print(f"  Architecture : Qwen-2.5 3B (3.09 Billion Parameters)")
+    print(f"  Hardware     : {gpu_name}")
     print("=" * 76, flush=True)
 
-    # 1. Load Model (Directly from or to project root: model_weights/)
+    # 1. Detect Available Weight Folders in Project Root
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(script_dir) if os.path.basename(script_dir) == "hands_on_demo" else script_dir
     model_weights_dir = os.path.join(project_root, "model_weights")
+    fine_tuned_dir = os.path.join(project_root, "fine_tuned_weights")
     os.makedirs(model_weights_dir, exist_ok=True)
 
-    has_local_weights = os.path.exists(os.path.join(model_weights_dir, "config.json")) or any(
-        f.endswith(".safetensors") for f in os.listdir(model_weights_dir) if not f.startswith(".")
+    has_fine_tuned = os.path.exists(fine_tuned_dir) and (
+        os.path.exists(os.path.join(fine_tuned_dir, "config.json")) or
+        any(f.endswith((".safetensors", ".bin")) for f in os.listdir(fine_tuned_dir) if not f.startswith("."))
+    )
+    has_base = os.path.exists(model_weights_dir) and (
+        os.path.exists(os.path.join(model_weights_dir, "config.json")) or
+        any(f.endswith((".safetensors", ".bin")) for f in os.listdir(model_weights_dir) if not f.startswith("."))
     )
 
-    if has_local_weights:
-        load_source = model_weights_dir
-        print(f"\n[*] 📦 Loading Pre-Downloaded Base Model from: {model_weights_dir}", flush=True)
+    # 2. Interactive Selection Menu (if mode not passed via CLI)
+    choice = args.mode
+    if choice is None and args.prompt is None:
+        print("\n" + "=" * 76)
+        print("  🎯 SELECT MODEL TO LOAD:")
+        print("=" * 76)
+        ft_status = "READY (Found in fine_tuned_weights/)" if has_fine_tuned else "NOT FOUND (Run exp2 first to generate)"
+        base_status = "READY (Found in model_weights/)" if has_base else "WILL DOWNLOAD from Hugging Face"
+        
+        print(f"  [1] Fine-Tuned Model (Trained on Amity & Cloud Dataset)")
+        print(f"      • Status: {ft_status}")
+        print(f"  [2] Base Foundation Model (Raw Qwen-2.5-3B-Instruct)")
+        print(f"      • Status: {base_status}")
+        print("-" * 76)
+        try:
+            user_sel = input("👉 Enter choice [1 or 2] (Default: 1): ").strip()
+            choice = user_sel if user_sel in ["1", "2"] else ("1" if has_fine_tuned else "2")
+        except (KeyboardInterrupt, EOFError):
+            print("\n[*] Exiting.")
+            return
+
+    # Determine load source based on choice
+    if choice in ["1", "finetuned"]:
+        if has_fine_tuned:
+            load_source = fine_tuned_dir
+            model_label = "FINE-TUNED MODEL (Amity & Cloud Domain Intelligence)"
+        else:
+            print(f"\n[!] fine_tuned_weights/ not found. Falling back to base model in model_weights/...")
+            load_source = model_weights_dir if has_base else args.model
+            model_label = "BASE FOUNDATION MODEL (Raw Qwen-3B)"
     else:
+        load_source = model_weights_dir if has_base else args.model
+        model_label = "BASE FOUNDATION MODEL (Raw Qwen-3B)"
+
+    # Download base weights if needed
+    if load_source == model_weights_dir and not has_base:
         print(f"\n[*] 📥 Downloading Base Model Weights directly to: {model_weights_dir}", flush=True)
         try:
             from huggingface_hub import snapshot_download
@@ -148,6 +192,8 @@ def main():
             print(f"    [Notice] Direct snapshot failed ({e}), loading directly from hub...", flush=True)
             load_source = args.model
 
+    print(f"\n[*] 📦 Loading Active Weights : {model_label}", flush=True)
+    print(f"    Target Source Directory : {load_source}", flush=True)
     t0_load = time.time()
     tokenizer = AutoTokenizer.from_pretrained(load_source, cache_dir=model_weights_dir, trust_remote_code=True)
     if tokenizer.pad_token is None:
