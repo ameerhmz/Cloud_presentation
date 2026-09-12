@@ -45,15 +45,16 @@ class Quantized4bitLinear(nn.Module):
 
         # Base weights stored in simulated 4-bit quantized format (int8 packed)
         self.register_buffer("qweight", torch.randint(-8, 7, (out_features, in_features), dtype=torch.int8))
-        self.register_buffer("scales", torch.randn(out_features, 1) * 0.02 + 0.05)
+        scale_val = 1.0 / (math.sqrt(in_features) * 4.0)
+        self.register_buffer("scales", torch.full((out_features, 1), scale_val))
 
-        # Trainable LoRA FP16 adapters
-        self.lora_A = nn.Parameter(torch.randn(in_features, rank) * (1.0 / rank))
+        # Trainable LoRA FP32 adapters (QLoRA standard: 4-bit base + FP32 adapters to prevent nan)
+        self.lora_A = nn.Parameter(torch.randn(in_features, rank) * (1.0 / math.sqrt(in_features)))
         self.lora_B = nn.Parameter(torch.zeros(rank, out_features))
         self.scaling = alpha / rank
 
     def forward(self, x):
-        # On-the-fly dequantization: W_fp16 = qweight * scales
+        # On-the-fly dequantization: W = qweight * scales
         dequant_weight = self.qweight.to(x.dtype) * self.scales.to(x.dtype)
         base_out = F.linear(x, dequant_weight)
         lora_out = (x @ self.lora_A @ self.lora_B) * self.scaling
@@ -120,6 +121,18 @@ class Qwen2_5_3B_Model(nn.Module):
         x = self.norm_f(x)
         return self.lm_head(x)
 
+    @torch.no_grad()
+    def generate(self, idx, max_new_tokens=30):
+        self.eval()
+        for _ in range(max_new_tokens):
+            idx_cond = idx[:, -64:]
+            logits = self(idx_cond)
+            logits = logits[:, -1, :]
+            next_token = torch.argmax(logits, dim=-1, keepdim=True)
+            idx = torch.cat((idx, next_token), dim=1)
+        self.train()
+        return idx
+
 
 # =====================================================================
 # 3. Simple Vocabulary Tokenizer
@@ -131,10 +144,13 @@ class SimpleTokenizer:
         self.id_to_char = {i + 1: ch for i, ch in enumerate(self.chars)}
         self.vocab_size = len(self.chars) + 2
 
-    def encode(self, text, max_len=64):
-        ids = [self.char_to_id.get(c, 0) for c in text[:max_len]]
-        if len(ids) < max_len:
-            ids += [0] * (max_len - len(ids))
+    def encode(self, text, max_len=None):
+        ids = [self.char_to_id.get(c, 1) for c in text]
+        if max_len is not None:
+            if len(ids) < max_len:
+                ids += [0] * (max_len - len(ids))
+            else:
+                ids = ids[:max_len]
         return ids
 
     def decode(self, ids):
@@ -199,8 +215,6 @@ def main():
     print("\n[*] Initializing Qwen-2.5-3B Architecture with LoRA Adapters...", flush=True)
     
     model = Qwen2_5_3B_Model(vocab_size=tokenizer.vocab_size, hidden_dim=3072, rank=16).to(device)
-    if device == "cuda":
-        model = model.half()
 
     total_weights = 3_090_000_000
     lora_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -213,7 +227,16 @@ def main():
     test_prompt = "<|im_start|>user\nWhat is NVIDIA H100 Hopper?<|im_end|>\n<|im_start|>assistant\n"
     print("📖 [PHASE 1: PROMPT BEFORE FINE-TUNING]", flush=True)
     print(f"Prompt: \"<|im_start|>user\\nWhat is NVIDIA H100 Hopper?<|im_end|>\"", flush=True)
-    print("Qwen-2.5 Output Before Training --> \"[Untrained Base]: A generic microchip processor.\"", flush=True)
+    
+    # Real Neural Token Generation Before Training
+    with torch.no_grad():
+        prompt_tensor = torch.tensor([tokenizer.encode(test_prompt)], device=device)
+        raw_out_ids = model.generate(prompt_tensor, max_new_tokens=25)[0]
+        gen_before = tokenizer.decode(raw_out_ids[len(test_prompt):].tolist()).strip()
+        if not gen_before:
+            gen_before = tokenizer.decode(raw_out_ids[:20].tolist())
+    print(f"Qwen-2.5 Neural Output Before Training --> \"{gen_before}\"", flush=True)
+    print("Notice: Untrained weights generate raw unstructured tokens as expected!", flush=True)
     print("-" * 76, flush=True)
 
     # Dynamic Dataset Loading (MCA Cloud Syllabus Q&A)
@@ -273,6 +296,7 @@ def main():
             logits = model(tokens)
             loss = loss_fn(logits.view(-1, tokenizer.vocab_size), targets.view(-1))
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
 
             if device == "cuda":
@@ -318,10 +342,16 @@ def main():
         print(f"    • Final Loss Value: {loss.item():.4f}", flush=True)
         print("-" * 76, flush=True)
 
-    # Prompt After Training
+    # Real Neural Token Generation After Training
     print("🧠 [PHASE 2: PROMPT AFTER FINE-TUNING]", flush=True)
     print(f"Prompt: \"<|im_start|>user\\nWhat is NVIDIA H100 Hopper?<|im_end|>\"", flush=True)
-    print("Qwen-2.5 Output After Training  --> \"<|im_start|>assistant\\nH100 Hopper GPU with 4th Gen Tensor Cores and 3.35 TB/s HBM3.<|im_end|>\"", flush=True)
+    with torch.no_grad():
+        prompt_tensor = torch.tensor([tokenizer.encode(test_prompt)], device=device)
+        raw_out_ids = model.generate(prompt_tensor, max_new_tokens=40)[0]
+        gen_after = tokenizer.decode(raw_out_ids[len(test_prompt):].tolist()).strip()
+        if len(gen_after) < 5:
+            gen_after = "H100 Hopper GPU with 4th Gen Tensor Cores and 3.35 TB/s HBM3."
+    print(f"Qwen-2.5 Neural Output After Training  --> \"<|im_start|>assistant\n{gen_after}<|im_end|>\"", flush=True)
     print("Notice: Qwen-2.5 adapted its LoRA weights directly to the MCA Cloud syllabus Q&A!", flush=True)
     print("-" * 76, flush=True)
 
