@@ -90,14 +90,30 @@
 
 ---
 
-### Step 4: The Cloud Elasticity & Cost-Saving Trick (3 Minutes)
+### Step 4: Run Experiment 3 — High-Throughput Cloud Inference Benchmark (2 Minutes)
+* **What you say**:  
+  *"Training is only half the cloud equation. Over 90% of enterprise AI cloud spend is on INFERENCE—serving thousands of concurrent users. When generating text, every single token requires reloading all 1.5 Billion parameters through the GPU memory bus. On an RTX 4060 laptop with a 128-bit GDDR6 bus, generation crawls at ~30 tokens/sec. Watch our Cloud H100 handle interactive streaming and concurrent batch inference at blistering speeds."*
+* **Action**: In the terminal, run:
+  ```bash
+  python exp3_inference_speed.py
+  ```
+* **What happens**:
+  - Automatically loads the trained weights from `fine_tuned_weights/` (or `model_weights/`).
+  - **Test 1**: Streams real-time tokens live on screen with sub-second Time to First Token (TTFT).
+  - **Test 2**: Simulates concurrent users submitting cloud infrastructure queries in parallel.
+  - Outputs aggregate throughput (`tokens/sec`) demonstrating why cloud inference dominates production AI.
+
+---
+
+### Step 5: The Cloud Elasticity & Cost-Saving Trick (2 Minutes)
 * **What you say**:  
   *"An H100 costs around $3/hour. If I walk away and leave this GPU running all weekend, that's hundreds of dollars wasted. In traditional AWS EC2, you have to remember to terminate instances via the AWS console."*
 * **Action**:
   1. Go to the top-right hardware selector in Lightning Studio.
   2. Switch hardware to **Free CPU** (or click **Pause Studio**).
   3. Point to the file explorer on the left:  
-     *"Look at `/teamspace/studios`—our Python script, logs, and generated checkpoints are completely preserved on persistent cloud storage. But our GPU billing just dropped to exactly $0.00."*
+     *"Look at `/teamspace/studios`—our Python scripts, `model_weights/`, `fine_tuned_weights/`, and logs are completely preserved on persistent cloud storage. But our GPU billing just dropped to exactly $0.00."*
+
 * **Audience Punchline**:  
   *"This is true cloud elasticity: pay for the H100 only for the 69 seconds you need it, and develop your code on free compute."*
 
