@@ -793,6 +793,163 @@
       font-size: 0.9rem;
     }
     .hud-row:last-child { border-bottom: none; }
+
+    /* Brand SVGs & Technology Badges */
+    .brand-icon {
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    .brand-partner-strip {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      padding-left: 0.85rem;
+    }
+    .header-tech-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.22rem 0.65rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      transition: all 0.2s ease;
+    }
+    .header-tech-chip.nvidia-chip {
+      background: rgba(118, 185, 0, 0.12);
+      border: 1px solid rgba(118, 185, 0, 0.35);
+      color: #76b900;
+    }
+    .header-tech-chip.lightning-chip {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+    }
+    .header-tech-chip:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Partner Ribbon on Slide 1 */
+    .partner-ecosystem-ribbon {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      margin: 0.9rem 0 0.5rem 0;
+    }
+    .partner-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.32rem 0.85rem;
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      border: 1px solid transparent;
+      transition: all 0.25s ease;
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .partner-badge:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .partner-badge.partner-nvidia {
+      background: rgba(118, 185, 0, 0.1);
+      border-color: rgba(118, 185, 0, 0.35);
+      color: #84cc16;
+    }
+    .partner-badge.partner-lightning {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+    }
+    .partner-badge.partner-pytorch {
+      background: rgba(238, 76, 44, 0.1);
+      border-color: rgba(238, 76, 44, 0.35);
+      color: #fb7185;
+    }
+    .partner-badge.partner-hf {
+      background: rgba(255, 210, 30, 0.1);
+      border-color: rgba(255, 210, 30, 0.35);
+      color: #facc15;
+    }
+    .partner-separator {
+      color: var(--text-subtle);
+      font-size: 0.85rem;
+      font-weight: 300;
+    }
+
+    /* Live Studio Connection Beacon */
+    .studio-beacon-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 0.22rem 0.7rem;
+      border-radius: 9999px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #34d399;
+      letter-spacing: 0.04em;
+    }
+    .beacon-pulse-wrapper {
+      position: relative;
+      width: 8px;
+      height: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .beacon-core {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+    .beacon-ring {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      border: 1.5px solid #10b981;
+      opacity: 0.8;
+      animation: beacon-ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+    @keyframes beacon-ping {
+      0% { transform: scale(0.6); opacity: 0.9; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+
+    /* VRAM Mini Gauge */
+    .vram-mini-gauge {
+      margin-top: 0.75rem;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 8px;
+      padding: 0.55rem 0.8rem;
+    }
+    .vram-gauge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      margin-bottom: 0.35rem;
+    }
+    .vram-gauge-track {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
   </style>
 </head>
 <body>
@@ -807,6 +964,21 @@
       <div class="brand-logo">
         <span class="brand-badge-pill">CSIT805</span>
         <span>Cloud Infrastructure and Services</span>
+      </div>
+
+      <div class="brand-partner-strip">
+        <div class="header-tech-chip nvidia-chip" title="NVIDIA Hopper Architecture">
+          <svg class="brand-icon" width="14" height="14" viewBox="0 0 24 24" fill="#76B900">
+            <path d="M8.949 6.273c-.569.117-2.072 1.34-2.88 2.34-1.282 1.583-1.92 3.12-1.92 4.606 0 1.25.438 2.457 1.288 3.555.27.35.25.412-.132.412-.224 0-.585-.357-.962-.95C3.33 14.654 3 13.118 3 11.667c0-2.316.897-4.485 2.651-6.425C7.306 3.407 9.49 2.222 11.83 1.88c.63-.092 2.115-.094 2.766-.004 3.01.42 5.67 2.054 7.214 4.437.765 1.182 1.19 2.35 1.19 3.269 0 .426-.067.57-.279.593-.243.027-.373-.087-.585-.512-.87-1.74-2.223-2.99-4.049-3.738-1.503-.615-3.554-.766-5.113-.377-.923.23-2.483.99-3.025 1.48v-.755zm.802 3.028c-.808.272-1.927 1.328-2.452 2.31-.69 1.29-.878 2.29-.624 3.325.215.877.784 1.637 1.584 2.116.483.29.62.29.743.003.076-.176.07-.253-.053-.478-.609-1.118-.72-2.327-.32-3.486.417-1.206 1.405-2.28 2.646-2.879 1.173-.566 2.712-.72 4.103-.41 1.696.377 3.047 1.42 3.824 2.952.348.685.498 1.474.438 2.31-.073.999-.487 1.954-1.209 2.793-.166.193-.277.368-.247.388.077.051.523-.332.784-.673.882-1.15 1.309-2.343 1.31-3.66.002-1.848-.916-3.606-2.502-4.795-1.514-1.135-3.328-1.644-5.267-1.478-.838.072-2.394.57-2.975.872v-.874zm1.488 2.72c-.445.163-.94.61-1.264 1.144-.45.74-.53 1.332-.294 2.176.19.68.745 1.22 1.458 1.42.345.097.747.07 1.05-.07.608-.28 1.02-.797 1.196-1.503.107-.428.083-.872-.07-1.282-.244-.652-.774-1.13-1.476-1.332-.23-.066-.46-.083-.6-.053z"/>
+          </svg>
+          <span>NVIDIA</span>
+        </div>
+        <div class="header-tech-chip lightning-chip" title="Lightning AI Cloud Infrastructure">
+          <svg class="brand-icon" width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M13 2L3 13.5h7.5L9.5 22l11.5-11.5h-7.5L14.5 2h-1.5z" fill="#38bdf8" stroke="#38bdf8" stroke-width="0.8" stroke-linejoin="round"/>
+          </svg>
+          <span>Lightning AI</span>
+        </div>
       </div>
       
       <div class="speaker-pill">
@@ -848,6 +1020,43 @@
       <div class="slide-eyebrow">CSIT805: Cloud Infrastructure and Services • Group 1</div>
       <h1 class="slide-title">Leveraging NVIDIA H100 on Lightning AI for High-Performance Cloud Computing</h1>
       <h2 class="slide-subtitle">Bridging the Gap Between Consumer Hardware and Enterprise Supercomputing for Modern AI Workloads</h2>
+
+      <!-- Enterprise Partner Ecosystem Ribbon -->
+      <div class="partner-ecosystem-ribbon">
+        <div class="partner-badge partner-nvidia" title="Hardware: NVIDIA Hopper GH100 SXM5 80GB">
+          <svg class="brand-icon" width="16" height="16" viewBox="0 0 24 24" fill="#76B900">
+            <path d="M8.949 6.273c-.569.117-2.072 1.34-2.88 2.34-1.282 1.583-1.92 3.12-1.92 4.606 0 1.25.438 2.457 1.288 3.555.27.35.25.412-.132.412-.224 0-.585-.357-.962-.95C3.33 14.654 3 13.118 3 11.667c0-2.316.897-4.485 2.651-6.425C7.306 3.407 9.49 2.222 11.83 1.88c.63-.092 2.115-.094 2.766-.004 3.01.42 5.67 2.054 7.214 4.437.765 1.182 1.19 2.35 1.19 3.269 0 .426-.067.57-.279.593-.243.027-.373-.087-.585-.512-.87-1.74-2.223-2.99-4.049-3.738-1.503-.615-3.554-.766-5.113-.377-.923.23-2.483.99-3.025 1.48v-.755zm.802 3.028c-.808.272-1.927 1.328-2.452 2.31-.69 1.29-.878 2.29-.624 3.325.215.877.784 1.637 1.584 2.116.483.29.62.29.743.003.076-.176.07-.253-.053-.478-.609-1.118-.72-2.327-.32-3.486.417-1.206 1.405-2.28 2.646-2.879 1.173-.566 2.712-.72 4.103-.41 1.696.377 3.047 1.42 3.824 2.952.348.685.498 1.474.438 2.31-.073.999-.487 1.954-1.209 2.793-.166.193-.277.368-.247.388.077.051.523-.332.784-.673.882-1.15 1.309-2.343 1.31-3.66.002-1.848-.916-3.606-2.502-4.795-1.514-1.135-3.328-1.644-5.267-1.478-.838.072-2.394.57-2.975.872v-.874zm1.488 2.72c-.445.163-.94.61-1.264 1.144-.45.74-.53 1.332-.294 2.176.19.68.745 1.22 1.458 1.42.345.097.747.07 1.05-.07.608-.28 1.02-.797 1.196-1.503.107-.428.083-.872-.07-1.282-.244-.652-.774-1.13-1.476-1.332-.23-.066-.46-.083-.6-.053z"/>
+          </svg>
+          <span>NVIDIA Hopper GH100</span>
+        </div>
+        <span class="partner-separator">&times;</span>
+        <div class="partner-badge partner-lightning" title="Platform: Lightning AI Cloud Studios">
+          <svg class="brand-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M13 2L3 13.5h7.5L9.5 22l11.5-11.5h-7.5L14.5 2h-1.5z" fill="#38bdf8" stroke="#38bdf8" stroke-width="0.8" stroke-linejoin="round"/>
+          </svg>
+          <span>Lightning AI Cloud Studios</span>
+        </div>
+        <span class="partner-separator">&times;</span>
+        <div class="partner-badge partner-pytorch" title="ML Framework: PyTorch 2.x FSDP">
+          <svg class="brand-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12.7 2.1a1 1 0 0 0-1.4 0L8.1 5.3A7.5 7.5 0 1 0 16.5 16l2.1-2.1a10.5 10.5 0 1 1-2.8-11.8l-3.1 3z" fill="#EE4C2C"/>
+            <circle cx="15.8" cy="4.2" r="1.5" fill="#EE4C2C"/>
+          </svg>
+          <span>PyTorch 2.x Distributed</span>
+        </div>
+        <span class="partner-separator">&times;</span>
+        <div class="partner-badge partner-hf" title="Model Weights: Hugging Face Hub (Qwen 2.5)">
+          <svg class="brand-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" fill="#FFD21E"/>
+            <circle cx="8.5" cy="10" r="1.5" fill="#1E293B"/>
+            <circle cx="15.5" cy="10" r="1.5" fill="#1E293B"/>
+            <path d="M8.5 14.5c1 1.5 2.5 2 3.5 2s2.5-.5 3.5-2" stroke="#1E293B" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+            <circle cx="6" cy="12.5" r="1.2" fill="#F87171"/>
+            <circle cx="18" cy="12.5" r="1.2" fill="#F87171"/>
+          </svg>
+          <span>Hugging Face Hub</span>
+        </div>
+      </div>
       
       <!-- 5 DEDICATED CARDS FOR ALL 5 TEAM MEMBERS -->
       <div class="grid-5" style="margin-top: 1.5rem;">
@@ -1025,7 +1234,12 @@
 
     <!-- SLIDE 5: Hopper Architecture Overview (Harsh Mishra) -->
     <div class="slide" data-speaker="Harsh Mishra (Part 2: H100 Deep-Dive)" data-time="07:00 - 15:30 (8.5 min)">
-      <div class="slide-eyebrow">Part 2: Silicon Engineering • Harsh Mishra (8.5 Mins)</div>
+      <div class="slide-eyebrow" style="display:inline-flex; align-items:center; gap:0.5rem;">
+        <svg class="brand-icon" width="15" height="15" viewBox="0 0 24 24" fill="#76B900">
+          <path d="M8.949 6.273c-.569.117-2.072 1.34-2.88 2.34-1.282 1.583-1.92 3.12-1.92 4.606 0 1.25.438 2.457 1.288 3.555.27.35.25.412-.132.412-.224 0-.585-.357-.962-.95C3.33 14.654 3 13.118 3 11.667c0-2.316.897-4.485 2.651-6.425C7.306 3.407 9.49 2.222 11.83 1.88c.63-.092 2.115-.094 2.766-.004 3.01.42 5.67 2.054 7.214 4.437.765 1.182 1.19 2.35 1.19 3.269 0 .426-.067.57-.279.593-.243.027-.373-.087-.585-.512-.87-1.74-2.223-2.99-4.049-3.738-1.503-.615-3.554-.766-5.113-.377-.923.23-2.483.99-3.025 1.48v-.755zm.802 3.028c-.808.272-1.927 1.328-2.452 2.31-.69 1.29-.878 2.29-.624 3.325.215.877.784 1.637 1.584 2.116.483.29.62.29.743.003.076-.176.07-.253-.053-.478-.609-1.118-.72-2.327-.32-3.486.417-1.206 1.405-2.28 2.646-2.879 1.173-.566 2.712-.72 4.103-.41 1.696.377 3.047 1.42 3.824 2.952.348.685.498 1.474.438 2.31-.073.999-.487 1.954-1.209 2.793-.166.193-.277.368-.247.388.077.051.523-.332.784-.673.882-1.15 1.309-2.343 1.31-3.66.002-1.848-.916-3.606-2.502-4.795-1.514-1.135-3.328-1.644-5.267-1.478-.838.072-2.394.57-2.975.872v-.874zm1.488 2.72c-.445.163-.94.61-1.264 1.144-.45.74-.53 1.332-.294 2.176.19.68.745 1.22 1.458 1.42.345.097.747.07 1.05-.07.608-.28 1.02-.797 1.196-1.503.107-.428.083-.872-.07-1.282-.244-.652-.774-1.13-1.476-1.332-.23-.066-.46-.083-.6-.053z"/>
+        </svg>
+        <span>Part 2: Silicon Engineering • Harsh Mishra (8.5 Mins)</span>
+      </div>
       <h1 class="slide-title">NVIDIA Hopper GH100 Architecture</h1>
       <h2 class="slide-subtitle">TSMC 4N Custom Process Node packing 80 Billion transistors into an 814 mm² monolithic die.</h2>
       
@@ -1177,7 +1391,12 @@
 
     <!-- SLIDE 9: Lightning AI Platform (Mirza Saad Beg) -->
     <div class="slide" data-speaker="Mirza Saad Beg (Part 3: Cloud Infrastructure)" data-time="15:30 - 23:00 (7.5 min)">
-      <div class="slide-eyebrow">Part 3: Cloud Infrastructure • Mirza Saad Beg (7.5 Mins)</div>
+      <div class="slide-eyebrow" style="display:inline-flex; align-items:center; gap:0.5rem;">
+        <svg class="brand-icon" width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path d="M13 2L3 13.5h7.5L9.5 22l11.5-11.5h-7.5L14.5 2h-1.5z" fill="#38bdf8" stroke="#38bdf8" stroke-width="0.8" stroke-linejoin="round"/>
+        </svg>
+        <span>Part 3: Cloud Infrastructure • Mirza Saad Beg (7.5 Mins)</span>
+      </div>
       <h1 class="slide-title">The Cloud Abstraction Problem & Lightning AI</h1>
       <h2 class="slide-subtitle">Eliminating Kubernetes, Dockerfiles, and AWS IAM friction for AI researchers.</h2>
       
@@ -1270,7 +1489,7 @@
       <h2 class="slide-subtitle">Team Red (Laptop RTX 4060) vs. Team Green (Cloud NVIDIA H100 SXM5) on Lightning AI.</h2>
       
       <!-- Showdown Duel Cards -->
-      <div class="grid-2" style="margin-bottom: 1.25rem;">
+      <div class="grid-2" style="margin-bottom: 1.15rem;">
         <!-- Team Red -->
         <div class="card card-accent-rose" style="padding: 1.1rem 1.25rem;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
@@ -1283,12 +1502,27 @@
           <div class="card-desc" style="font-size:0.86rem; color:#f1f5f9;">
             Fighting for its life: Capped at Batch 1, choked by memory bandwidth, thermal throttling, and immediate CUDA Out Of Memory crashes on enterprise tensors.
           </div>
+          <!-- VRAM Mini Gauge (Red) -->
+          <div class="vram-mini-gauge" style="border: 1px solid rgba(244, 63, 94, 0.25);">
+            <div class="vram-gauge-header">
+              <span style="color:var(--accent-rose); font-weight:700;">VRAM Saturation (Hard Barrier)</span>
+              <span style="color:var(--accent-rose); font-weight:800;">8.0 / 8.0 GB (100% - OOM Crash)</span>
+            </div>
+            <div class="vram-gauge-track">
+              <div style="width: 100%; height: 100%; background: linear-gradient(90deg, #f59e0b, #ef4444); box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Team Green -->
         <div class="card card-accent-emerald" style="padding: 1.1rem 1.25rem;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-            <div style="font-family:var(--font-display); font-weight:800; font-size:1.15rem; color:var(--accent-nvidia);">Team Green: Cloud NVIDIA H100</div>
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <svg class="brand-icon" width="18" height="18" viewBox="0 0 24 24" fill="#76B900">
+                <path d="M8.949 6.273c-.569.117-2.072 1.34-2.88 2.34-1.282 1.583-1.92 3.12-1.92 4.606 0 1.25.438 2.457 1.288 3.555.27.35.25.412-.132.412-.224 0-.585-.357-.962-.95C3.33 14.654 3 13.118 3 11.667c0-2.316.897-4.485 2.651-6.425C7.306 3.407 9.49 2.222 11.83 1.88c.63-.092 2.115-.094 2.766-.004 3.01.42 5.67 2.054 7.214 4.437.765 1.182 1.19 2.35 1.19 3.269 0 .426-.067.57-.279.593-.243.027-.373-.087-.585-.512-.87-1.74-2.223-2.99-4.049-3.738-1.503-.615-3.554-.766-5.113-.377-.923.23-2.483.99-3.025 1.48v-.755zm.802 3.028c-.808.272-1.927 1.328-2.452 2.31-.69 1.29-.878 2.29-.624 3.325.215.877.784 1.637 1.584 2.116.483.29.62.29.743.003.076-.176.07-.253-.053-.478-.609-1.118-.72-2.327-.32-3.486.417-1.206 1.405-2.28 2.646-2.879 1.173-.566 2.712-.72 4.103-.41 1.696.377 3.047 1.42 3.824 2.952.348.685.498 1.474.438 2.31-.073.999-.487 1.954-1.209 2.793-.166.193-.277.368-.247.388.077.051.523-.332.784-.673.882-1.15 1.309-2.343 1.31-3.66.002-1.848-.916-3.606-2.502-4.795-1.514-1.135-3.328-1.644-5.267-1.478-.838.072-2.394.57-2.975.872v-.874zm1.488 2.72c-.445.163-.94.61-1.264 1.144-.45.74-.53 1.332-.294 2.176.19.68.745 1.22 1.458 1.42.345.097.747.07 1.05-.07.608-.28 1.02-.797 1.196-1.503.107-.428.083-.872-.07-1.282-.244-.652-.774-1.13-1.476-1.332-.23-.066-.46-.083-.6-.053z"/>
+              </svg>
+              <span style="font-family:var(--font-display); font-weight:800; font-size:1.15rem; color:var(--accent-nvidia);">Team Green: Cloud NVIDIA H100</span>
+            </div>
             <span class="badge-pill badge-green">THE SUPERCOMPUTER</span>
           </div>
           <div style="font-family:var(--font-mono); font-size:0.78rem; color:var(--text-subtle); margin-bottom:0.4rem;">
@@ -1296,6 +1530,16 @@
           </div>
           <div class="card-desc" style="font-size:0.86rem; color:#f1f5f9;">
             Unchecked supercomputing muscle: 16-user parallel serving, zero OOM errors, 27.8x fine-tuning throughput, and sub-second multi-user generation.
+          </div>
+          <!-- VRAM Mini Gauge (Green) -->
+          <div class="vram-mini-gauge" style="border: 1px solid rgba(16, 185, 129, 0.25);">
+            <div class="vram-gauge-header">
+              <span style="color:var(--accent-nvidia); font-weight:700;">VRAM Headroom (Enterprise Tensors)</span>
+              <span style="color:var(--accent-nvidia); font-weight:800;">12.0 / 80.0 GB (15% - 68 GB Free)</span>
+            </div>
+            <div class="vram-gauge-track">
+              <div style="width: 15%; height: 100%; background: linear-gradient(90deg, #76b900, #10b981); box-shadow: 0 0 10px rgba(118, 185, 0, 0.7);"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1307,8 +1551,19 @@
             <div class="macos-dot dot-min"></div>
             <div class="macos-dot dot-max"></div>
           </div>
-          <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">lightning-studio: ~/Cloud_presentation/hands_on_demo</span>
-          <span class="badge-pill badge-green">NVIDIA H100 SXM5 (80 GB)</span>
+          <div style="display:flex; align-items:center; gap:0.45rem;">
+            <svg class="brand-icon" width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M13 2L3 13.5h7.5L9.5 22l11.5-11.5h-7.5L14.5 2h-1.5z" fill="#38bdf8" stroke="#38bdf8" stroke-width="0.8" stroke-linejoin="round"/>
+            </svg>
+            <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">lightning.ai/studios &bull; ~/Cloud_presentation/hands_on_demo</span>
+          </div>
+          <div class="studio-beacon-badge">
+            <span class="beacon-pulse-wrapper">
+              <span class="beacon-ring"></span>
+              <span class="beacon-core"></span>
+            </span>
+            <span>STUDIO ACTIVE &bull; US-EAST-1 (700W SXM5)</span>
+          </div>
         </div>
         <div class="macos-terminal-body">
           <div>$ nvidia-smi <span style="color: var(--text-muted);"># Step 0: Verify 80GB HBM3 Memory & Hopper Driver</span></div>
@@ -1316,6 +1571,31 @@
           <div style="margin-top: 0.35rem;">$ python exp2_real_llm_finetune.py --epochs 1 <span style="color: var(--text-muted);"># Exp 2: Qwen-2.5 3B Fine-Tuning (332 QA: 2.3s vs 64s)</span></div>
           <div style="margin-top: 0.35rem;">$ python exp3_inference_speed.py <span style="color: var(--text-muted);"># Exp 3: Interactive Chat REPL (Token Streaming)</span></div>
           <div style="margin-top: 0.35rem;">$ python exp4_enterprise_stress_test.py <span style="color: var(--text-muted);"># Exp 4: 16-User Concurrent Stress Test (1,480+ tok/s)</span></div>
+          
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:0.85rem; padding-top:0.65rem; border-top:1px solid rgba(255,255,255,0.08); font-family:var(--font-mono); font-size:0.75rem;">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span class="partner-badge partner-pytorch" style="padding:0.18rem 0.55rem; font-size:0.72rem;">
+                <svg class="brand-icon" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <path d="M12.7 2.1a1 1 0 0 0-1.4 0L8.1 5.3A7.5 7.5 0 1 0 16.5 16l2.1-2.1a10.5 10.5 0 1 1-2.8-11.8l-3.1 3z" fill="#EE4C2C"/>
+                  <circle cx="15.8" cy="4.2" r="1.5" fill="#EE4C2C"/>
+                </svg>
+                PyTorch 2.5
+              </span>
+              <span class="partner-badge partner-hf" style="padding:0.18rem 0.55rem; font-size:0.72rem;">
+                <svg class="brand-icon" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" fill="#FFD21E"/>
+                  <circle cx="8.5" cy="10" r="1.5" fill="#1E293B"/>
+                  <circle cx="15.5" cy="10" r="1.5" fill="#1E293B"/>
+                  <path d="M8.5 14.5c1 1.5 2.5 2 3.5 2s2.5-.5 3.5-2" stroke="#1E293B" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+                </svg>
+                Transformers &amp; PEFT
+              </span>
+              <span class="partner-badge partner-nvidia" style="padding:0.18rem 0.55rem; font-size:0.72rem;">
+                CUDA 12.1 &bull; SM_90a
+              </span>
+            </div>
+            <span style="color:var(--text-subtle);">4 Parallel Empirical Tests Ready</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1326,11 +1606,27 @@
       <h1 class="slide-title">Measured Benchmark Matrix: RTX 3050 vs. 4060 vs. H100</h1>
       <h2 class="slide-subtitle">Empirical results across memory bandwidth, 3B LLM fine-tuning, and 16-user enterprise concurrent serving.</h2>
       
-      <!-- View Switcher Tabs -->
-      <div class="view-switcher">
-        <button class="view-btn active" onclick="switchBenchmarkView('view-graphs', this)">Visual Comparison Graphs</button>
-        <button class="view-btn" onclick="switchBenchmarkView('view-table', this)">Detailed Telemetry Table</button>
-        <button class="view-btn" onclick="switchBenchmarkView('view-image', this)">Publication Matrix (4K)</button>
+      <!-- View Switcher Tabs & Ecosystem Badges -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.15rem; flex-wrap:wrap; gap:0.75rem;">
+        <div class="view-switcher" style="margin-bottom:0;">
+          <button class="view-btn active" onclick="switchBenchmarkView('view-graphs', this)">Visual Comparison Graphs</button>
+          <button class="view-btn" onclick="switchBenchmarkView('view-table', this)">Detailed Telemetry Table</button>
+          <button class="view-btn" onclick="switchBenchmarkView('view-image', this)">Publication Matrix (4K)</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <span class="partner-badge partner-nvidia" style="padding:0.2rem 0.65rem; font-size:0.75rem;">
+            <svg class="brand-icon" width="13" height="13" viewBox="0 0 24 24" fill="#76B900">
+              <path d="M8.949 6.273c-.569.117-2.072 1.34-2.88 2.34-1.282 1.583-1.92 3.12-1.92 4.606 0 1.25.438 2.457 1.288 3.555.27.35.25.412-.132.412-.224 0-.585-.357-.962-.95C3.33 14.654 3 13.118 3 11.667c0-2.316.897-4.485 2.651-6.425C7.306 3.407 9.49 2.222 11.83 1.88c.63-.092 2.115-.094 2.766-.004 3.01.42 5.67 2.054 7.214 4.437.765 1.182 1.19 2.35 1.19 3.269 0 .426-.067.57-.279.593-.243.027-.373-.087-.585-.512-.87-1.74-2.223-2.99-4.049-3.738-1.503-.615-3.554-.766-5.113-.377-.923.23-2.483.99-3.025 1.48v-.755zm.802 3.028c-.808.272-1.927 1.328-2.452 2.31-.69 1.29-.878 2.29-.624 3.325.215.877.784 1.637 1.584 2.116.483.29.62.29.743.003.076-.176.07-.253-.053-.478-.609-1.118-.72-2.327-.32-3.486.417-1.206 1.405-2.28 2.646-2.879 1.173-.566 2.712-.72 4.103-.41 1.696.377 3.047 1.42 3.824 2.952.348.685.498 1.474.438 2.31-.073.999-.487 1.954-1.209 2.793-.166.193-.277.368-.247.388.077.051.523-.332.784-.673.882-1.15 1.309-2.343 1.31-3.66.002-1.848-.916-3.606-2.502-4.795-1.514-1.135-3.328-1.644-5.267-1.478-.838.072-2.394.57-2.975.872v-.874zm1.488 2.72c-.445.163-.94.61-1.264 1.144-.45.74-.53 1.332-.294 2.176.19.68.745 1.22 1.458 1.42.345.097.747.07 1.05-.07.608-.28 1.02-.797 1.196-1.503.107-.428.083-.872-.07-1.282-.244-.652-.774-1.13-1.476-1.332-.23-.066-.46-.083-.6-.053z"/>
+            </svg>
+            Hopper SXM5
+          </span>
+          <span class="partner-badge partner-lightning" style="padding:0.2rem 0.65rem; font-size:0.75rem;">
+            <svg class="brand-icon" width="13" height="13" viewBox="0 0 24 24" fill="none">
+              <path d="M13 2L3 13.5h7.5L9.5 22l11.5-11.5h-7.5L14.5 2h-1.5z" fill="#38bdf8" stroke="#38bdf8" stroke-width="0.8" stroke-linejoin="round"/>
+            </svg>
+            Lightning AI Studio
+          </span>
+        </div>
       </div>
 
       <!-- VIEW 1: Visual Graphs (Default) -->
