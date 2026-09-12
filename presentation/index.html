@@ -995,12 +995,6 @@
         <span style="color: var(--text-subtle);">/ 45:00</span>
       </div>
 
-      <button class="btn-action" onclick="toggleCueCard()" title="View Spoken Script Cue Card (Press 'S')">Cue Card</button>
-
-      <button class="btn-action" onclick="toggleOverview()" title="Slide Grid Overview (Press 'O' or 'Esc')">Overview</button>
-
-      <button class="btn-action" id="laser-btn" onclick="toggleLaser()" title="Laser Pointer Tool (Press 'L')">Laser</button>
-
       <button class="btn-action" onclick="prevSlide()" title="Previous Slide (Left Arrow)">◀</button>
       <div class="slide-counter-chip" id="slide-num">1 / 17</div>
       <button class="btn-action" onclick="nextSlide()" title="Next Slide (Right Arrow / Space)">▶</button>
@@ -2179,12 +2173,12 @@
       const laserEl = document.getElementById('laser-pointer');
       const laserBtn = document.getElementById('laser-btn');
       if (isLaserActive) {
-        laserEl.style.display = 'block';
-        laserBtn.classList.add('active');
+        if (laserEl) laserEl.style.display = 'block';
+        if (laserBtn) laserBtn.classList.add('active');
         document.body.style.cursor = 'none';
       } else {
-        laserEl.style.display = 'none';
-        laserBtn.classList.remove('active');
+        if (laserEl) laserEl.style.display = 'none';
+        if (laserBtn) laserBtn.classList.remove('active');
         document.body.style.cursor = 'default';
       }
     }
