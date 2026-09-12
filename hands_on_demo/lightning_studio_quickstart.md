@@ -2,7 +2,7 @@
 
 **Presentation Date**: 14/09/2026  
 **Subject**: Cloud Infrastructure and Services - MCA III  
-**Demo Driver**: Ameer Hamza (Group 1 Lead)  
+**Demo Driver**: Ameer Hamza (Group 1)  
 **Target Duration**: 13 Minutes
 
 ---

@@ -3,7 +3,7 @@
 **Course**: Cloud Infrastructure and Services (MCA III)  
 **Topic**: Leveraging NVIDIA H100 on Lightning AI for High-Performance Cloud Computing  
 **Group 1**:
-- **Ameer Hamza** (A073145025016) — Lead, Host, Live Hands-On Demo, In-Between Transitions, Viva Defense Lead
+- **Ameer Hamza** (A073145025016) — Host, Live Hands-On Demo, In-Between Transitions, Viva Defense
 - **Suhail Alam** (A073145025036) — Part 1: Foundations of AI Compute & The Cloud Shift (3 Mins)
 - **Harsh Mishra** (A073145025008) — Part 2: NVIDIA H100 Hopper Microarchitecture (8.5 Mins)
 - **Mirza Saad Beg** (A073145025035) — Part 3: Lightning AI Cloud Infrastructure & Distributed Systems (7.5 Mins)
@@ -26,7 +26,7 @@
 ---
 
 # 🎙️ Section 1: Opening & Context (00:00 - 04:00)
-**Speaker**: **Ameer Hamza** *(Lead / Host)*  
+**Speaker**: **Ameer Hamza** *(Host / Opening)*  
 **Allotted Time**: **4 Minutes**
 
 ### [SLIDE 1: Title Slide — Leveraging NVIDIA H100 on Lightning AI]
@@ -230,12 +230,12 @@
 > 
 > Best of all, Lightning AI allows you to scale from 1 GPU to 64 H100s with **zero code modifications**—the platform orchestrates NCCL communicators and distributed ranks automatically.
 > 
-> Now, theoretical slides are informative, but real engineering requires empirical proof. I invite our group leader, Ameer Hamza, to take the driver's seat and run our live demonstration suite on our active Lightning AI H100 Studio!"
+> Now, theoretical slides are informative, but real engineering requires empirical proof. I invite Ameer Hamza to take the driver's seat and run our live demonstration suite on our active Lightning AI H100 Studio!"
 
 ---
 
 # 💻 Section 5: LIVE Hands-On Masterclass (23:00 - 36:00)
-**Speaker**: **Ameer Hamza** *(Lead / Demo Driver)*  
+**Speaker**: **Ameer Hamza** *(Demo Driver)*  
 **Allotted Time**: **13 Minutes** *(High energy, live terminal execution, audience engagement)*
 
 ### [SWITCH TO LIVE SCREEN: Projector Showing Terminal / Lightning Studio]
@@ -454,7 +454,7 @@ python exp4_enterprise_stress_test.py
 
 ---
 
-### 📇 CUE CARD: Ameer Hamza (Lead / Host)
+### 📇 CUE CARD: Ameer Hamza (Host & Live Demo)
 - **Time Allocated**: 00:00 - 04:00 (Intro) | 23:00 - 36:00 (Live Demo) | 41:00 - 45:00 (Closing & Viva)
 - **Slides**: Slide 1, Slide 2, Slide 12, Slide 13, Slide 16, Slide 17
 - **Key Metrics to Quote**:
@@ -501,7 +501,7 @@ python exp4_enterprise_stress_test.py
   - Elasticity: Switching Free CPU $\to$ H100 in 30 seconds with persistent storage preservation.
   - Scaling: DDP (gradient all-reduce over NVLink) vs FSDP (sharding weights, gradients, optimizer for >80GB models).
 - **Handoff Phrase**:
-  - *"I invite our group leader, Ameer Hamza, to run our live demonstration suite on Lightning AI!"*
+  - *"I invite Ameer Hamza to run our live demonstration suite on Lightning AI!"*
 
 ---
 

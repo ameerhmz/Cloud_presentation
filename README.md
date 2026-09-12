@@ -4,7 +4,7 @@
 **Date of Presentation**: 14/09/2026  
 **Total Duration**: 45 Minutes (Theory + Live Hands-on Demonstration + Faculty Q&A)  
 **Group 1 Members**:
-1. **Ameer Hamza** (A073145025016) — Lead, Host, Live Hands-On Demo, In-Between Transitions, Q&A Lead
+1. **Ameer Hamza** (A073145025016) — Host, Live Hands-On Demo, In-Between Transitions, Q&A Coordination
 2. **Suhail Alam** (A073145025036) — Part 1: Foundations of AI Compute & The Cloud Shift (3 Mins)
 3. **Harsh Mishra** (A073145025008) — Part 2: NVIDIA H100 Hopper Deep-Dive (8.5 Mins)
 4. **Mirza Saad Beg** (A073145025035) — Part 3: Lightning AI Cloud Infrastructure & Distributed Scaling (7.5 Mins)
@@ -33,13 +33,13 @@
 
 ## ⏱️ Master 45-Minute Schedule
 
-| Time | Duration | Segment & Topic | Speaker / Lead | Core Deliverable |
+| Time | Duration | Segment & Topic | Speaker | Core Deliverable |
 | :--- | :--- | :--- | :--- | :--- |
-| **00:00 - 04:00** | 4.0 min | **Welcome & The AI Compute Crisis** | **Ameer Hamza** *(Lead)* | Sets context, Moore's Law wall, roadmap |
+| **00:00 - 04:00** | 4.0 min | **Welcome & The AI Compute Crisis** | **Ameer Hamza** | Sets context, Moore's Law wall, roadmap |
 | **04:00 - 07:00** | **3.0 min** | **Part 1: The Cloud AI Foundation** | **Suhail Alam** | CPU vs GPU parallelism, why on-prem H100 ($300k) is unviable |
 | **07:00 - 15:30** | **8.5 min** | **Part 2: NVIDIA H100 Hopper Deep-Dive** | **Harsh Mishra** | TSMC 4N, 4th Gen Tensor Cores, FP8 Transformer Engine, HBM3 3.35 TB/s |
 | **15:30 - 23:00** | **7.5 min** | **Part 3: Lightning AI Cloud Infrastructure** | **Mirza Saad Beg** | Cloud virtualization, instant hardware switching (CPU $\leftrightarrow$ H100), DDP & FSDP |
-| **23:00 - 36:00** | **13.0 min**| **Part 4: LIVE Hands-On Masterclass** | **Ameer Hamza** *(Lead)* | Live Lightning Studio, VRAM OOM test, 3B Quantized LLM fine-tuning, auto-sleep trick |
+| **23:00 - 36:00** | **13.0 min**| **Part 4: LIVE Hands-On Masterclass** | **Ameer Hamza** | Live Lightning Studio, VRAM OOM test, 3B Quantized LLM fine-tuning, auto-sleep trick |
 | **36:00 - 41:00** | **5.0 min** | **Part 5: Cloud Economics & Comparison**| **Harshit Tandon** | Hyperscaler quota bottlenecks (AWS/GCP), pricing matrix, cost optimization |
 | **41:00 - 45:00** | 4.0 min | **Conclusion, Faculty Viva & Q&A** | **Ameer & All Members** | Key takeaways, answering professors' questions |
 

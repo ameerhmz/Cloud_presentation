@@ -4,7 +4,7 @@
 EXPERIMENT 2: Genuine Qwen-2.5 LLM Fine-Tuning with Hugging Face Transformers
 Course: Cloud Infrastructure and Services - MCA III
 Topic: Cloud Acceleration: Why H100 Cloud Supercomputers Outperform Local GPUs
-Presenter: Ameer Hamza (Group 1 Lead)
+Presenter: Ameer Hamza (Group 1)
 ===============================================================================
 100% REAL MODEL DOWNLOAD, REAL TOKENIZATION, REAL BACKPROPAGATION, REAL LOSS
 ===============================================================================

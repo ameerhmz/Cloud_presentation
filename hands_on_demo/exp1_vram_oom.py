@@ -4,7 +4,7 @@
 EXPERIMENT 1: The VRAM Capacity Wall & "CUDA Out of Memory" (OOM) Test
 Course: Cloud Infrastructure and Services - MCA III
 Topic: Leveraging NVIDIA H100 on Lightning AI for High-Performance Cloud Computing
-Presenter: Ameer Hamza (Group 1 Lead)
+Presenter: Ameer Hamza (Group 1)
 ===============================================================================
 """
 

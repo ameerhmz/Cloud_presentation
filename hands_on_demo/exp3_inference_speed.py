@@ -4,7 +4,7 @@
 EXPERIMENT 3: Interactive Cloud LLM Terminal & Real-Time Serving Benchmark
 Course: Cloud Infrastructure and Services - MCA III
 Topic: Serving AI at Scale: Interactive Cloud Inference Demonstration
-Presenter: Ameer Hamza (Group 1 Lead)
+Presenter: Ameer Hamza (Group 1)
 ===============================================================================
 LIVE REPL: ASK ANY QUESTION DIRECTLY TO THE 3-BILLION PARAMETER QWEN MODEL
 ===============================================================================

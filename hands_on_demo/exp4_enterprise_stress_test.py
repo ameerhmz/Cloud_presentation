@@ -4,7 +4,7 @@
 EXPERIMENT 4: Enterprise Multi-User Cloud Stress Test (16 Concurrent Users)
 Course: Cloud Infrastructure and Services - MCA III
 Topic: High-Concurrency Enterprise Serving: Why Cloud H100 Dominates Production AI
-Presenter: Ameer Hamza (Group 1 Lead)
+Presenter: Ameer Hamza (Group 1)
 ===============================================================================
 SIMULTANEOUS PARALLEL INFERENCE FOR 16 CONCURRENT USERS ACROSS 80GB HBM3
 ===============================================================================
