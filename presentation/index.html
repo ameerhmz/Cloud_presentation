@@ -855,65 +855,61 @@
       <div class="terminal-box" style="margin-top: 1.5rem;">
         <div class="terminal-header">
           <div class="t-dot t-red"></div><div class="t-dot t-yellow"></div><div class="t-dot t-green"></div>
-          <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 0.5rem;">Terminal Execution: Lightning Studio</span>
+          <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 0.5rem;">Hands-On Demo Suite: Lightning AI Studio</span>
         </div>
-        <div>$ python3 hands_on_demo/exp1_vram_oom.py</div>
-        <div style="margin-top: 0.3rem;">$ python3 hands_on_demo/exp2_real_llm_finetune.py</div>
+        <div>$ python exp1_vram_oom.py <span style="color: var(--text-muted);"># Exp 1: 12GB VRAM Capacity Wall (144ms vs OOM)</span></div>
+        <div style="margin-top: 0.25rem;">$ python exp2_real_llm_finetune.py --steps 50 --batch-size 16 <span style="color: var(--text-muted);"># Exp 2: Qwen-2.5 3B Real Fine-Tuning</span></div>
+        <div style="margin-top: 0.25rem;">$ python exp3_inference_speed.py <span style="color: var(--text-muted);"># Exp 3: Interactive Chat REPL (Fine-Tuned vs Base)</span></div>
+        <div style="margin-top: 0.25rem;">$ python exp4_enterprise_stress_test.py <span style="color: var(--text-muted);"># Exp 4: 16-User Concurrent Stress Test (1,450+ tok/s)</span></div>
       </div>
     </div>
 
     <!-- SLIDE 13: Live Benchmark Results (Ameer Hamza) -->
     <div class="slide" data-speaker="Ameer Hamza (Live Demo Masterclass)">
       <div class="slide-tag">Part 4: Benchmark Findings • Ameer Hamza (13 Mins)</div>
-      <h1 class="slide-title">Measured Benchmark: Qwen-2.5 3B (4-Bit QLoRA)</h1>
-      <h2 class="slide-subtitle">Live empirical comparison fine-tuning Alibaba Cloud's Qwen-2.5 3B Model on Cloud Infrastructure Q&A.</h2>
+      <h1 class="slide-title">Measured Benchmark Findings: Laptop vs H100</h1>
+      <h2 class="slide-subtitle">Empirical results across memory capacity, real 3B model fine-tuning, and enterprise concurrent serving.</h2>
       
       <table class="comp-table">
         <thead>
           <tr>
-            <th>Hardware Benchmark Metric</th>
-            <th>Laptop RTX 4060</th>
-            <th>Cloud NVIDIA H100</th>
-            <th>Advantage / Factor</th>
+            <th>Live Experiment Benchmark</th>
+            <th>Laptop RTX 4060 (8GB)</th>
+            <th>Cloud NVIDIA H100 (80GB)</th>
+            <th>Cloud Advantage</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><strong>Workload Model</strong></td>
-            <td>Qwen-2.5-3B (3.09 Billion Params)</td>
-            <td>Qwen-2.5-3B (3.09 Billion Params)</td>
-            <td>Alibaba Cloud Open Weights</td>
+            <td><strong>Exp 1: VRAM Wall (12GB Allocation)</strong></td>
+            <td><span class="badge-pill badge-red">💥 CUDA Out of Memory (Crashed)</span></td>
+            <td><span class="badge-pill badge-green">✔ 144 ms (67 GB Free)</span></td>
+            <td><strong>Zero OOM Crashes</strong></td>
           </tr>
           <tr>
-            <td><strong>Unquantized Training VRAM</strong></td>
-            <td><span class="badge-pill badge-red">36.8 GB (💥 4.6x LAPTOP VRAM)</span></td>
-            <td><span class="badge-pill badge-green">36.8 GB (Fits in 80GB HBM3)</span></td>
-            <td><strong>Full Unquantized Precision</strong></td>
+            <td><strong>Exp 2: 3B LLM Fine-Tuning</strong></td>
+            <td>~380 ms/step (Batch 1, 80°C throttling)</td>
+            <td><strong>~110 ms/step (Batch 16 Parallel)</strong></td>
+            <td><strong>16x Data Throughput</strong></td>
           </tr>
           <tr>
-            <td><strong>4-Bit QLoRA VRAM Used</strong></td>
-            <td>~4.2 GB (Compressed into 4-bit)</td>
-            <td>~4.2 GB (or Full FP16 / FP8)</td>
-            <td>4:1 Memory Compression</td>
-          </tr>
-          <tr>
-            <td><strong>Step Latency (Batch Size 1 vs 8)</strong></td>
-            <td>6,840 ms (6.84 sec / step)</td>
-            <td><strong>148 ms (0.148 sec / step)</strong></td>
-            <td><strong>46.2x Faster Step Time</strong></td>
+            <td><strong>Exp 3: Interactive LLM Serving</strong></td>
+            <td>~28 tokens/sec (Single User)</td>
+            <td><strong>~180+ tokens/sec (Single User)</strong></td>
+            <td><strong>6.4x Faster TTFT</strong></td>
           </tr>
           <tr style="background: rgba(0, 242, 254, 0.08);">
-            <td><strong>Total 500-Step Training Run</strong></td>
-            <td><strong>57.0 Minutes</strong> ⏳</td>
-            <td><strong>1 Minute 14 Seconds</strong> ⚡</td>
-            <td><span class="badge-pill badge-cyan">~46x FASTER 🚀</span></td>
+            <td><strong>Exp 4: 16-User Concurrent Stress Test</strong></td>
+            <td><strong>~25.7 sec</strong> (Serial Queue)</td>
+            <td><strong>1.35 sec</strong> (Simultaneous Batch)</td>
+            <td><span class="badge-pill badge-cyan">⚡ 19.0x FASTER (1,480 tok/s)</span></td>
           </tr>
         </tbody>
       </table>
 
       <div class="card card-highlight" style="margin-top: 1.5rem;">
         <div class="card-desc" style="font-size: 1.05rem; color: #fff;">
-          🎯 <strong>Core Takeaway for Faculty:</strong> A student who trains on a laptop loses an entire lab lecture waiting for one run. With the Cloud H100 on Lightning AI, they iterate, debug, and finish 60 experiments in the same timeframe.
+          🎯 <strong>Core Takeaway for Faculty:</strong> A student training on an 8GB laptop crashes on real activations and queues users serially. With the Cloud H100 on Lightning AI, they process 16 parallel users in 1.35s and achieve enterprise throughput on demand.
         </div>
       </div>
     </div>
