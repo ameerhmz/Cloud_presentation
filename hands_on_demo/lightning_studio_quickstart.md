@@ -15,7 +15,7 @@
 4. In the top-right hardware picker, click the machine dropdown:
    - Select **NVIDIA H100** (or if testing freely before class, T4 / A10G / CPU, and switch to H100 for the demo).
 5. In the bottom terminal, clone your repository:
-   `git clone https://github.com/YOUR_GITHUB_USERNAME/Cloud_presentation.git`
+   `git clone https://github.com/ameerhmz/Cloud_presentation.git`
    `cd Cloud_presentation/hands_on_demo`
 
 ---

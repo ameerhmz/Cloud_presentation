@@ -27,7 +27,7 @@ git push -u origin main
 ### Step 1: Clone from GitHub
 Open Command Prompt / PowerShell on your RTX 4060 laptop:
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/Cloud_presentation.git
+git clone https://github.com/ameerhmz/Cloud_presentation.git
 cd Cloud_presentation
 pip install -r requirements.txt
 ```
@@ -71,7 +71,7 @@ cd hands_on_demo
 ### Step 2: Open Terminal in Lightning Studio & Clone from GitHub
 In the Lightning Studio bottom panel, click **Terminal**:
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/Cloud_presentation.git
+git clone https://github.com/ameerhmz/Cloud_presentation.git
 cd Cloud_presentation/hands_on_demo
 ```
 *(Lightning AI already has PyTorch, CUDA 12, and Hugging Face installed. ZERO manual installation needed!)*.
