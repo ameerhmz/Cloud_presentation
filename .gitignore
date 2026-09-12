@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large AI Model Caches and Weights (Avoids GitHub 100MB file reject limit)
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.h5
+*.msgpack
+model_cache/
+qwen_model/
+hands_on_demo/model_cache/
+hands_on_demo/qwen_model/
+
+# Environments & IDEs
+.env
+.venv
+venv/
+ENV/
+.DS_Store
+.idea/
+.vscode/

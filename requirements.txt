@@ -1,0 +1,8 @@
+# Cloud Presentation & Hands-on Demo Dependencies
+# Course: Cloud Infrastructure and Services - MCA III
+# Topic: Leveraging NVIDIA H100 on Lightning AI for High-Performance Cloud Computing
+
+torch>=2.0.0
+transformers>=4.36.0
+huggingface_hub>=0.20.0
+accelerate>=0.25.0

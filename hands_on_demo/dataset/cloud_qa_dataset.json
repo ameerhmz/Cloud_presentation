@@ -1,0 +1,252 @@
+[
+  {
+    "instruction": "What is the NVIDIA H100 Hopper architecture?",
+    "response": "NVIDIA H100 is Hopper microarchitecture built on TSMC 4N with 80 billion transistors, 4th Gen Tensor Cores, FP8 Transformer Engine, and 3.35 TB/s HBM3 memory bandwidth.",
+    "text": "<|im_start|>user\nWhat is the NVIDIA H100 Hopper architecture?<|im_end|>\n<|im_start|>assistant\nNVIDIA H100 is Hopper microarchitecture built on TSMC 4N with 80 billion transistors, 4th Gen Tensor Cores, FP8 Transformer Engine, and 3.35 TB/s HBM3 memory bandwidth.<|im_end|>"
+  },
+  {
+    "instruction": "What is the FP8 Transformer Engine on NVIDIA H100?",
+    "response": "The FP8 Transformer Engine utilizes E4M3 format for forward activation and E5M2 for backward gradients, delivering 2x-3x higher compute throughput without precision loss.",
+    "text": "<|im_start|>user\nWhat is the FP8 Transformer Engine on NVIDIA H100?<|im_end|>\n<|im_start|>assistant\nThe FP8 Transformer Engine utilizes E4M3 format for forward activation and E5M2 for backward gradients, delivering 2x-3x higher compute throughput without precision loss.<|im_end|>"
+  },
+  {
+    "instruction": "Why does training Qwen-2.5-3B cause CUDA Out of Memory on an 8GB laptop?",
+    "response": "Full 16-bit training of Qwen-3B requires 36.8 GB VRAM for weights, activations, and AdamW optimizer states, completely overflowing the RTX 4060 8 GB physical limit.",
+    "text": "<|im_start|>user\nWhy does training Qwen-2.5-3B cause CUDA Out of Memory on an 8GB laptop?<|im_end|>\n<|im_start|>assistant\nFull 16-bit training of Qwen-3B requires 36.8 GB VRAM for weights, activations, and AdamW optimizer states, completely overflowing the RTX 4060 8 GB physical limit.<|im_end|>"
+  },
+  {
+    "instruction": "What is 4-Bit QLoRA and how does it compress Qwen-2.5-3B?",
+    "response": "QLoRA quantizes frozen base weights to 4-bit NormalFloat (NF4), reducing weight VRAM from 6.2 GB to 1.85 GB, while fine-tuning lightweight FP16 low-rank adapter matrices.",
+    "text": "<|im_start|>user\nWhat is 4-Bit QLoRA and how does it compress Qwen-2.5-3B?<|im_end|>\n<|im_start|>assistant\nQLoRA quantizes frozen base weights to 4-bit NormalFloat (NF4), reducing weight VRAM from 6.2 GB to 1.85 GB, while fine-tuning lightweight FP16 low-rank adapter matrices.<|im_end|>"
+  },
+  {
+    "instruction": "Compare HBM3 memory bandwidth to consumer GDDR6 memory.",
+    "response": "H100 HBM3 delivers 3,350 GB/s across a 5120-bit bus with 3D stacked dies, which is 12.3x wider than RTX 4060 GDDR6 memory at 272 GB/s.",
+    "text": "<|im_start|>user\nCompare HBM3 memory bandwidth to consumer GDDR6 memory?<|im_end|>\n<|im_start|>assistant\nH100 HBM3 delivers 3,350 GB/s across a 5120-bit bus with 3D stacked dies, which is 12.3x wider than RTX 4060 GDDR6 memory at 272 GB/s.<|im_end|>"
+  },
+  {
+    "instruction": "Why does 4-bit quantized Qwen-3B train so slowly on an RTX 4060 laptop?",
+    "response": "Consumer GPUs lack native silicon dequantization hardware, forcing software dequantization across a narrow 272 GB/s bus which results in 6.8s per step and 57 minutes total.",
+    "text": "<|im_start|>user\nWhy does 4-bit quantized Qwen-3B train so slowly on an RTX 4060 laptop?<|im_end|>\n<|im_start|>assistant\nConsumer GPUs lack native silicon dequantization hardware, forcing software dequantization across a narrow 272 GB/s bus which results in 6.8s per step and 57 minutes total.<|im_end|>"
+  },
+  {
+    "instruction": "What speedup does NVIDIA H100 provide over an RTX 4060 for Qwen-2.5-3B fine-tuning?",
+    "response": "NVIDIA H100 completes 500 steps in 74.0 seconds compared to 57.0 minutes on RTX 4060, achieving a 46.2x empirical training speedup.",
+    "text": "<|im_start|>user\nWhat speedup does NVIDIA H100 provide over an RTX 4060 for Qwen-2.5-3B fine-tuning?<|im_end|>\n<|im_start|>assistant\nNVIDIA H100 completes 500 steps in 74.0 seconds compared to 57.0 minutes on RTX 4060, achieving a 46.2x empirical training speedup.<|im_end|>"
+  },
+  {
+    "instruction": "What is Lightning AI in modern cloud infrastructure?",
+    "response": "Lightning AI is a zero-setup cloud compute platform providing instant containerized Studios with dynamic hardware switching between CPU and H100 GPUs.",
+    "text": "<|im_start|>user\nWhat is Lightning AI in modern cloud infrastructure?<|im_end|>\n<|im_start|>assistant\nLightning AI is a zero-setup cloud compute platform providing instant containerized Studios with dynamic hardware switching between CPU and H100 GPUs.<|im_end|>"
+  },
+  {
+    "instruction": "Explain dynamic hardware switching and container elasticity on Lightning AI.",
+    "response": "Users develop code on free CPU instances and switch to NVIDIA H100 in 30 seconds for execution, preserving persistent disk state while paying only for active GPU seconds.",
+    "text": "<|im_start|>user\nExplain dynamic hardware switching and container elasticity on Lightning AI.<|im_end|>\n<|im_start|>assistant\nUsers develop code on free CPU instances and switch to NVIDIA H100 in 30 seconds for execution, preserving persistent disk state while paying only for active GPU seconds.<|im_end|>"
+  },
+  {
+    "instruction": "What is the difference between DDP and FSDP in distributed AI clusters?",
+    "response": "Distributed Data Parallel replicates model weights on every GPU, whereas Fully Sharded Data Parallel shards weights, gradients, and optimizer states across nodes to fit massive models.",
+    "text": "<|im_start|>user\nWhat is the difference between DDP and FSDP in distributed AI clusters?<|im_end|>\n<|im_start|>assistant\nDistributed Data Parallel replicates model weights on every GPU, whereas Fully Sharded Data Parallel shards weights, gradients, and optimizer states across nodes to fit massive models.<|im_end|>"
+  },
+  {
+    "instruction": "What is NVLink 4 and why is it critical for multi-GPU training?",
+    "response": "NVLink 4 delivers 900 GB/s bidirectional interconnect bandwidth per GPU, over 7 times faster than PCIe Gen 5, enabling high-speed gradient synchronization in AllReduce.",
+    "text": "<|im_start|>user\nWhat is NVLink 4 and why is it critical for multi-GPU training?<|im_end|>\n<|im_start|>assistant\nNVLink 4 delivers 900 GB/s bidirectional interconnect bandwidth per GPU, over 7 times faster than PCIe Gen 5, enabling high-speed gradient synchronization in AllReduce.<|im_end|>"
+  },
+  {
+    "instruction": "What are the cloud economics advantages of Lightning AI over AWS EC2?",
+    "response": "Lightning AI allows single-GPU on-demand rental at ~3 dollars per hour with no quota review delays, per-second billing, and automatic idle auto-pause.",
+    "text": "<|im_start|>user\nWhat are the cloud economics advantages of Lightning AI over AWS EC2?<|im_end|>\n<|im_start|>assistant\nLightning AI allows single-GPU on-demand rental at ~3 dollars per hour with no quota review delays, per-second billing, and automatic idle auto-pause.<|im_end|>"
+  },
+  {
+    "instruction": "What is the capital expense and power requirement of an on-premise H100 DGX server?",
+    "response": "An 8-GPU H100 DGX server costs over 300,000 dollars, draws 10.2 kW of power, requires 3-phase power delivery, and demands specialized chilled-water liquid cooling.",
+    "text": "<|im_start|>user\nWhat is the capital expense and power requirement of an on-premise H100 DGX server?<|im_end|>\n<|im_start|>assistant\nAn 8-GPU H100 DGX server costs over 300,000 dollars, draws 10.2 kW of power, requires 3-phase power delivery, and demands specialized chilled-water liquid cooling.<|im_end|>"
+  },
+  {
+    "instruction": "How does FlashAttention-2 optimize memory access on Hopper GPUs?",
+    "response": "FlashAttention-2 tiles attention matrix computations directly into on-chip SRAM cache, eliminating redundant read-write round trips to external HBM3 memory.",
+    "text": "<|im_start|>user\nHow does FlashAttention-2 optimize memory access on Hopper GPUs?<|im_end|>\n<|im_start|>assistant\nFlashAttention-2 tiles attention matrix computations directly into on-chip SRAM cache, eliminating redundant read-write round trips to external HBM3 memory.<|im_end|>"
+  },
+  {
+    "instruction": "What is Multi-Instance GPU (MIG) on NVIDIA H100?",
+    "response": "MIG partitions a single physical H100 GPU into up to seven isolated hardware instances, each with dedicated compute cores, memory controllers, and guaranteed QoS.",
+    "text": "<|im_start|>user\nWhat is Multi-Instance GPU (MIG) on NVIDIA H100?<|im_end|>\n<|im_start|>assistant\nMIG partitions a single physical H100 GPU into up to seven isolated hardware instances, each with dedicated compute cores, memory controllers, and guaranteed QoS.<|im_end|>"
+  },
+  {
+    "instruction": "What is Grouped-Query Attention (GQA) used in Qwen-2.5-3B?",
+    "response": "GQA groups multiple query attention heads to share a single key-value head (24 Q heads to 8 KV heads in Qwen-3B), reducing KV cache memory footprint by 66%.",
+    "text": "<|im_start|>user\nWhat is Grouped-Query Attention (GQA) used in Qwen-2.5-3B?<|im_end|>\n<|im_start|>assistant\nGQA groups multiple query attention heads to share a single key-value head (24 Q heads to 8 KV heads in Qwen-3B), reducing KV cache memory footprint by 66%.<|im_end|>"
+  },
+  {
+    "instruction": "How does auto-sleep prevent cloud overbilling on GPU studios?",
+    "response": "Auto-sleep monitors terminal and notebook activity, automatically shutting down the H100 instance after 15 minutes of idle time to prevent bill shock.",
+    "text": "<|im_start|>user\nHow does auto-sleep prevent cloud overbilling on GPU studios?<|im_end|>\n<|im_start|>assistant\nAuto-sleep monitors terminal and notebook activity, automatically shutting down the H100 instance after 15 minutes of idle time to prevent bill shock.<|im_end|>"
+  },
+  {
+    "instruction": "What is GPUDirect Storage (GDS) in high-performance cloud clusters?",
+    "response": "GDS establishes a direct DMA data path between local NVMe storage and GPU HBM memory, bypassing CPU bounce buffers and lowering IO latency.",
+    "text": "<|im_start|>user\nWhat is GPUDirect Storage (GDS) in high-performance cloud clusters?<|im_end|>\n<|im_start|>assistant\nGDS establishes a direct DMA data path between local NVMe storage and GPU HBM memory, bypassing CPU bounce buffers and lowering IO latency.<|im_end|>"
+  },
+  {
+    "instruction": "What is the difference between CapEx and OpEx in AI infrastructure planning?",
+    "response": "CapEx involves purchasing fixed hardware with high upfront risk and depreciation, while OpEx rents cloud compute on demand, shifting costs to operating utility budgets.",
+    "text": "<|im_start|>user\nWhat is the difference between CapEx and OpEx in AI infrastructure planning?<|im_end|>\n<|im_start|>assistant\nCapEx involves purchasing fixed hardware with high upfront risk and depreciation, while OpEx rents cloud compute on demand, shifting costs to operating utility budgets.<|im_end|>"
+  },
+  {
+    "instruction": "What interconnect technology links multi-node cloud clusters for LLM pretraining?",
+    "response": "Hyperscale AI clusters use InfiniBand NDR (3.2 Tbps per node) or RoCE v2 with non-blocking fat-tree spine-leaf topologies for low-latency AllReduce communication.",
+    "text": "<|im_start|>user\nWhat interconnect technology links multi-node cloud clusters for LLM pretraining?<|im_end|>\n<|im_start|>assistant\nHyperscale AI clusters use InfiniBand NDR (3.2 Tbps per node) or RoCE v2 with non-blocking fat-tree spine-leaf topologies for low-latency AllReduce communication.<|im_end|>"
+  },
+  {
+    "instruction": "What are DPX instructions on NVIDIA Hopper architecture?",
+    "response": "DPX instructions accelerate dynamic programming algorithms (Smith-Waterman, routing, graph search) by up to 7x compared to previous generation Ampere GPUs.",
+    "text": "<|im_start|>user\nWhat are DPX instructions on NVIDIA Hopper architecture?<|im_end|>\n<|im_start|>assistant\nDPX instructions accelerate dynamic programming algorithms (Smith-Waterman, routing, graph search) by up to 7x compared to previous generation Ampere GPUs.<|im_end|>"
+  },
+  {
+    "instruction": "How does SwiGLU activation improve Qwen-2.5-3B feed-forward layers?",
+    "response": "SwiGLU combines Swish activation with Gated Linear Units, providing smoother gradient flow and higher parameter efficiency compared to standard ReLU or GELU.",
+    "text": "<|im_start|>user\nHow does SwiGLU activation improve Qwen-2.5-3B feed-forward layers?<|im_end|>\n<|im_start|>assistant\nSwiGLU combines Swish activation with Gated Linear Units, providing smoother gradient flow and higher parameter efficiency compared to standard ReLU or GELU.<|im_end|>"
+  },
+  {
+    "instruction": "What is the memory consumption formula for training a language model with AdamW?",
+    "response": "Total VRAM equals 2 bytes for weights, 2 bytes for gradients, and 8 bytes for AdamW optimizer states per parameter, plus activation tensors and KV cache.",
+    "text": "<|im_start|>user\nWhat is the memory consumption formula for training a language model with AdamW?<|im_end|>\n<|im_start|>assistant\nTotal VRAM equals 2 bytes for weights, 2 bytes for gradients, and 8 bytes for AdamW optimizer states per parameter, plus activation tensors and KV cache.<|im_end|>"
+  },
+  {
+    "instruction": "What is the role of Kubernetes and Slurm in cloud AI workload orchestration?",
+    "response": "Kubernetes handles container microservices and web serving endpoints, while Slurm manages batch HPC queuing, node allocation, and massive parallel MPI training jobs.",
+    "text": "<|im_start|>user\nWhat is the role of Kubernetes and Slurm in cloud AI workload orchestration?<|im_end|>\n<|im_start|>assistant\nKubernetes handles container microservices and web serving endpoints, while Slurm manages batch HPC queuing, node allocation, and massive parallel MPI training jobs.<|im_end|>"
+  },
+  {
+    "instruction": "Why is cloud infrastructure essential for MCA graduates entering enterprise AI engineering?",
+    "response": "Modern enterprise LLMs exceed the memory, bandwidth, and thermal limits of local workstations, making cloud orchestration on platforms like Lightning AI mandatory.",
+    "text": "<|im_start|>user\nWhy is cloud infrastructure essential for MCA graduates entering enterprise AI engineering?<|im_end|>\n<|im_start|>assistant\nModern enterprise LLMs exceed the memory, bandwidth, and thermal limits of local workstations, making cloud orchestration on platforms like Lightning AI mandatory.<|im_end|>"
+  },
+  {
+    "instruction": "What is the difference between Type 1 and Type 2 hypervisors in cloud computing?",
+    "response": "Type 1 hypervisors (bare-metal like ESXi, KVM) run directly on physical hardware for minimal latency, while Type 2 hypervisors run atop a host operating system.",
+    "text": "<|im_start|>user\nWhat is the difference between Type 1 and Type 2 hypervisors in cloud computing?<|im_end|>\n<|im_start|>assistant\nType 1 hypervisors (bare-metal like ESXi, KVM) run directly on physical hardware for minimal latency, while Type 2 hypervisors run atop a host operating system.<|im_end|>"
+  },
+  {
+    "instruction": "How does Docker containerization differ from traditional virtual machines?",
+    "response": "Containers share the host OS kernel and isolate user space using cgroups and namespaces, achieving sub-second boot times and near-zero memory virtualization overhead.",
+    "text": "<|im_start|>user\nHow does Docker containerization differ from traditional virtual machines?<|im_end|>\n<|im_start|>assistant\nContainers share the host OS kernel and isolate user space using cgroups and namespaces, achieving sub-second boot times and near-zero memory virtualization overhead.<|im_end|>"
+  },
+  {
+    "instruction": "Explain the concept of Spot or Preemptible instances in cloud cost optimization.",
+    "response": "Spot instances offer up to 70-90% discounts on unused cloud capacity but can be reclaimed with 30-120 seconds notice, making them ideal for fault-tolerant checkpointed training.",
+    "text": "<|im_start|>user\nExplain the concept of Spot or Preemptible instances in cloud cost optimization.<|im_end|>\n<|im_start|>assistant\nSpot instances offer up to 70-90% discounts on unused cloud capacity but can be reclaimed with 30-120 seconds notice, making them ideal for fault-tolerant checkpointed training.<|im_end|>"
+  },
+  {
+    "instruction": "What is ZeRO (Zero Redundancy Optimizer) stage 1, 2, and 3?",
+    "response": "ZeRO-1 partitions optimizer states (4x memory saving), ZeRO-2 partitions optimizer states and gradients (8x saving), and ZeRO-3 partitions all model parameters across GPUs.",
+    "text": "<|im_start|>user\nWhat is ZeRO (Zero Redundancy Optimizer) stage 1, 2, and 3?<|im_end|>\n<|im_start|>assistant\nZeRO-1 partitions optimizer states (4x memory saving), ZeRO-2 partitions optimizer states and gradients (8x saving), and ZeRO-3 partitions all model parameters across GPUs.<|im_end|>"
+  },
+  {
+    "instruction": "What is Tensor Parallelism in Megatron-LM?",
+    "response": "Tensor Parallelism splits individual weight matrices (such as MLP projections and Multi-Head Attention) across multiple GPUs within a node using high-speed NVLink.",
+    "text": "<|im_start|>user\nWhat is Tensor Parallelism in Megatron-LM?<|im_end|>\n<|im_start|>assistant\nTensor Parallelism splits individual weight matrices (such as MLP projections and Multi-Head Attention) across multiple GPUs within a node using high-speed NVLink.<|im_end|>"
+  },
+  {
+    "instruction": "What is Pipeline Parallelism in distributed training?",
+    "response": "Pipeline Parallelism partitions transformer layers sequentially across different GPUs, using 1F1B micro-batch scheduling to minimize the pipeline execution bubble.",
+    "text": "<|im_start|>user\nWhat is Pipeline Parallelism in distributed training?<|im_end|>\n<|im_start|>assistant\nPipeline Parallelism partitions transformer layers sequentially across different GPUs, using 1F1B micro-batch scheduling to minimize the pipeline execution bubble.<|im_end|>"
+  },
+  {
+    "instruction": "What is the AWS Shared Responsibility Model?",
+    "response": "The cloud provider is responsible for security OF the cloud (physical data centers, hardware, hypervisors), while the customer is responsible for security IN the cloud (data, OS, IAM).",
+    "text": "<|im_start|>user\nWhat is the AWS Shared Responsibility Model?<|im_end|>\n<|im_start|>assistant\nThe cloud provider is responsible for security OF the cloud (physical data centers, hardware, hypervisors), while the customer is responsible for security IN the cloud (data, OS, IAM).<|im_end|>"
+  },
+  {
+    "instruction": "What is a Virtual Private Cloud (VPC) and why is it used?",
+    "response": "A VPC is a logically isolated virtual network within a public cloud, allowing fine-grained control over IP address ranges, subnets, route tables, and security groups.",
+    "text": "<|im_start|>user\nWhat is a Virtual Private Cloud (VPC) and why is it used?<|im_end|>\n<|im_start|>assistant\nA VPC is a logically isolated virtual network within a public cloud, allowing fine-grained control over IP address ranges, subnets, route tables, and security groups.<|im_end|>"
+  },
+  {
+    "instruction": "What is object storage and how does it compare to block storage?",
+    "response": "Object storage (like S3) stores unstructured data with metadata and unique keys accessible over HTTP REST APIs, offering massive scale, while block storage (EBS) attaches as raw disk volumes.",
+    "text": "<|im_start|>user\nWhat is object storage and how does it compare to block storage?<|im_end|>\n<|im_start|>assistant\nObject storage (like S3) stores unstructured data with metadata and unique keys accessible over HTTP REST APIs, offering massive scale, while block storage (EBS) attaches as raw disk volumes.<|im_end|>"
+  },
+  {
+    "instruction": "What are cold starts in serverless cloud architectures?",
+    "response": "Cold starts occur when a serverless function is invoked on a new microVM instance, incurring initialization latency (container pull, runtime boot) before handling requests.",
+    "text": "<|im_start|>user\nWhat are cold starts in serverless cloud architectures?<|im_end|>\n<|im_start|>assistant\nCold starts occur when a serverless function is invoked on a new microVM instance, incurring initialization latency (container pull, runtime boot) before handling requests.<|im_end|>"
+  },
+  {
+    "instruction": "What is Through-Silicon Via (TSV) technology in HBM3?",
+    "response": "TSVs are microscopic vertical copper interconnects etched directly through stacked silicon DRAM dies, enabling thousands of parallel data lines with minimal trace distance.",
+    "text": "<|im_start|>user\nWhat is Through-Silicon Via (TSV) technology in HBM3?<|im_end|>\n<|im_start|>assistant\nTSVs are microscopic vertical copper interconnects etched directly through stacked silicon DRAM dies, enabling thousands of parallel data lines with minimal trace distance.<|im_end|>"
+  },
+  {
+    "instruction": "How does Low-Rank Adaptation (LoRA) reduce fine-tuning memory?",
+    "response": "LoRA freezes the pre-trained weight matrix W and trains low-rank decomposition matrices A and B (rank r << d), reducing trainable parameters by over 99%.",
+    "text": "<|im_start|>user\nHow does Low-Rank Adaptation (LoRA) reduce fine-tuning memory?<|im_end|>\n<|im_start|>assistant\nLoRA freezes the pre-trained weight matrix W and trains low-rank decomposition matrices A and B (rank r << d), reducing trainable parameters by over 99%.<|im_end|>"
+  },
+  {
+    "instruction": "What is 4-bit NormalFloat (NF4) data type in QLoRA?",
+    "response": "NF4 is an information-theoretically optimal quantile quantization data type designed specifically for zero-mean, unit-variance normally distributed neural network weights.",
+    "text": "<|im_start|>user\nWhat is 4-bit NormalFloat (NF4) data type in QLoRA?<|im_end|>\n<|im_start|>assistant\nNF4 is an information-theoretically optimal quantile quantization data type designed specifically for zero-mean, unit-variance normally distributed neural network weights.<|im_end|>"
+  },
+  {
+    "instruction": "What is the function of an NVSwitch chip in NVIDIA DGX servers?",
+    "response": "NVSwitch is an on-board high-radix crossbar switch that connects all 8 GPUs with full bisection bandwidth, allowing every GPU to communicate at full 900 GB/s line rate.",
+    "text": "<|im_start|>user\nWhat is the function of an NVSwitch chip in NVIDIA DGX servers?<|im_end|>\n<|im_start|>assistant\nNVSwitch is an on-board high-radix crossbar switch that connects all 8 GPUs with full bisection bandwidth, allowing every GPU to communicate at full 900 GB/s line rate.<|im_end|>"
+  },
+  {
+    "instruction": "What is checkpointing in long-running cloud AI training jobs?",
+    "response": "Checkpointing periodically serializes model weights, optimizer states, and epoch counters to persistent cloud storage, ensuring jobs resume seamlessly after spot preemption or node failure.",
+    "text": "<|im_start|>user\nWhat is checkpointing in long-running cloud AI training jobs?<|im_end|>\n<|im_start|>assistant\nCheckpointing periodically serializes model weights, optimizer states, and epoch counters to persistent cloud storage, ensuring jobs resume seamlessly after spot preemption or node failure.<|im_end|>"
+  },
+  {
+    "instruction": "How does thermal throttling affect continuous laptop GPU workloads?",
+    "response": "When consumer laptop GPUs reach 82-87 degrees Celsius, dynamic frequency scaling automatically reduces GPU clock speeds by 30-50%, severely degrading prolonged training throughput.",
+    "text": "<|im_start|>user\nHow does thermal throttling affect continuous laptop GPU workloads?<|im_end|>\n<|im_start|>assistant\nWhen consumer laptop GPUs reach 82-87 degrees Celsius, dynamic frequency scaling automatically reduces GPU clock speeds by 30-50%, severely degrading prolonged training throughput.<|im_end|>"
+  },
+  {
+    "instruction": "What is RoCE v2 (RDMA over Converged Ethernet)?",
+    "response": "RoCE v2 enables direct Remote Direct Memory Access over standard Layer 3 IP routed networks, allowing GPU-to-GPU data transfers across cluster racks without CPU OS intervention.",
+    "text": "<|im_start|>user\nWhat is RoCE v2 (RDMA over Converged Ethernet)?<|im_end|>\n<|im_start|>assistant\nRoCE v2 enables direct Remote Direct Memory Access over standard Layer 3 IP routed networks, allowing GPU-to-GPU data transfers across cluster racks without CPU OS intervention.<|im_end|>"
+  },
+  {
+    "instruction": "What is horizontal scaling versus vertical scaling in cloud computing?",
+    "response": "Vertical scaling adds more CPU/RAM/GPUs to a single virtual instance, while horizontal scaling adds more independent node instances behind a load balancer or distributed scheduler.",
+    "text": "<|im_start|>user\nWhat is horizontal scaling versus vertical scaling in cloud computing?<|im_end|>\n<|im_start|>assistant\nVertical scaling adds more CPU/RAM/GPUs to a single virtual instance, while horizontal scaling adds more independent node instances behind a load balancer or distributed scheduler.<|im_end|>"
+  },
+  {
+    "instruction": "What is the purpose of an API Gateway in cloud microservice architectures?",
+    "response": "An API Gateway acts as a reverse proxy entry point that handles client authentication, rate limiting, request routing, SSL termination, and caching across backend microservices.",
+    "text": "<|im_start|>user\nWhat is the purpose of an API Gateway in cloud microservice architectures?<|im_end|>\n<|im_start|>assistant\nAn API Gateway acts as a reverse proxy entry point that handles client authentication, rate limiting, request routing, SSL termination, and caching across backend microservices.<|im_end|>"
+  },
+  {
+    "instruction": "What is infrastructure as code (IaC) in DevOps and cloud management?",
+    "response": "IaC defines and provisions computing infrastructure (VMs, VPCs, clusters) through machine-readable configuration files (Terraform, Ansible) rather than manual console clicks.",
+    "text": "<|im_start|>user\nWhat is infrastructure as code (IaC) in DevOps and cloud management?<|im_end|>\n<|im_start|>assistant\nIaC defines and provisions computing infrastructure (VMs, VPCs, clusters) through machine-readable configuration files (Terraform, Ansible) rather than manual console clicks.<|im_end|>"
+  },
+  {
+    "instruction": "How does NVMe-oF (NVMe over Fabrics) enhance cloud data access?",
+    "response": "NVMe-oF extends the NVMe protocol over InfiniBand or Ethernet fabrics, enabling networked shared storage pools with low microsecond latencies comparable to direct PCIe drives.",
+    "text": "<|im_start|>user\nHow does NVMe-oF (NVMe over Fabrics) enhance cloud data access?<|im_end|>\n<|im_start|>assistant\nNVMe-oF extends the NVMe protocol over InfiniBand or Ethernet fabrics, enabling networked shared storage pools with low microsecond latencies comparable to direct PCIe drives.<|im_end|>"
+  },
+  {
+    "instruction": "What is the role of Prometheus and Grafana in cloud monitoring?",
+    "response": "Prometheus scrapes and stores time-series operational metrics (GPU utilization, memory, network IO), while Grafana renders real-time visual dashboards and alert notifications.",
+    "text": "<|im_start|>user\nWhat is the role of Prometheus and Grafana in cloud monitoring?<|im_end|>\n<|im_start|>assistant\nPrometheus scrapes and stores time-series operational metrics (GPU utilization, memory, network IO), while Grafana renders real-time visual dashboards and alert notifications.<|im_end|>"
+  },
+  {
+    "instruction": "What is confidential computing in modern enterprise cloud platforms?",
+    "response": "Confidential computing uses hardware-based Trusted Execution Environments (like AMD SEV or Intel SGX) to encrypt data in use directly inside CPU/GPU memory, isolated even from the hypervisor.",
+    "text": "<|im_start|>user\nWhat is confidential computing in modern enterprise cloud platforms?<|im_end|>\n<|im_start|>assistant\nConfidential computing uses hardware-based Trusted Execution Environments (like AMD SEV or Intel SGX) to encrypt data in use directly inside CPU/GPU memory, isolated even from the hypervisor.<|im_end|>"
+  },
+  {
+    "instruction": "What is the key takeaway of the Group 1 MCA cloud presentation?",
+    "response": "Modern high-performance AI workloads cannot run locally due to memory bandwidth and capacity ceilings; scalable platforms like Lightning AI with NVIDIA H100 make enterprise AI accessible.",
+    "text": "<|im_start|>user\nWhat is the key takeaway of the Group 1 MCA cloud presentation?<|im_end|>\n<|im_start|>assistant\nModern high-performance AI workloads cannot run locally due to memory bandwidth and capacity ceilings; scalable platforms like Lightning AI with NVIDIA H100 make enterprise AI accessible.<|im_end|>"
+  },
+  {
+    "instruction": "What is Disaster Recovery and Multi-Region Availability in enterprise cloud computing?",
+    "response": "Disaster Recovery (DR) establishes automated data replication across distinct geographic cloud regions to achieve near-zero RTO and RPO during major regional datacenter outages.",
+    "text": "<|im_start|>user\nWhat is Disaster Recovery and Multi-Region Availability in enterprise cloud computing?<|im_end|>\n<|im_start|>assistant\nDisaster Recovery (DR) establishes automated data replication across distinct geographic cloud regions to achieve near-zero RTO and RPO during major regional datacenter outages.<|im_end|>"
+  }
+]

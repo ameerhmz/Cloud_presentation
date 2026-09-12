@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leveraging NVIDIA H100 on Lightning AI | MCA III Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --card-bg: rgba(16, 22, 36, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-cyan: #00f2fe;
+      --accent-blue: #4facfe;
+      --accent-green: #00f076;
+      --accent-purple: #7928ca;
+      --accent-amber: #ffaa00;
+      --accent-red: #ff3366;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-display: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(121, 40, 202, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.6) 0%, transparent 100%);
+    }
+
+    /* Top Bar Controls */
+    header {
+      height: 64px;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      background: rgba(7, 9, 14, 0.85);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+    }
+
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-badge span.pill {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      color: #000;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .speaker-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.4rem 1.2rem;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+    }
+
+    .speaker-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 12px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .speaker-name {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent-cyan);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .timer-badge {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.35rem 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.4rem 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: var(--font-body);
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+    }
+
+    /* Slides Container */
+    main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 4rem;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      max-width: 1280px;
+      height: 100%;
+      max-height: 820px;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Typography & Slide Layouts */
+    .slide-tag {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-cyan);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .slide-tag::before {
+      content: '';
+      display: inline-block;
+      width: 12px;
+      height: 2px;
+      background: var(--accent-cyan);
+    }
+
+    h1.slide-title {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    h2.slide-subtitle {
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 2rem;
+      max-width: 900px;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.75rem;
+      margin-top: 1rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      border-color: rgba(0, 242, 254, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .card-highlight {
+      border: 1px solid rgba(0, 242, 254, 0.35);
+      background: linear-gradient(145deg, rgba(0, 242, 254, 0.07), rgba(16, 22, 36, 0.85));
+    }
+
+    .card-accent-red {
+      border-color: rgba(255, 51, 102, 0.4);
+      background: linear-gradient(145deg, rgba(255, 51, 102, 0.08), rgba(16, 22, 36, 0.85));
+    }
+
+    .card-accent-green {
+      border-color: rgba(0, 240, 118, 0.4);
+      background: linear-gradient(145deg, rgba(0, 240, 118, 0.08), rgba(16, 22, 36, 0.85));
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      color: #fff;
+    }
+
+    .card-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .stat-number {
+      font-family: var(--font-display);
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--accent-cyan);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Comparison Table */
+    table.comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      margin-top: 1rem;
+    }
+
+    table.comp-table th {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 1rem 1.25rem;
+      text-align: left;
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    table.comp-table td {
+      padding: 0.9rem 1.25rem;
+      font-size: 0.95rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+    }
+
+    table.comp-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge-pill {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .badge-green { background: rgba(0, 240, 118, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
+    .badge-red { background: rgba(255, 51, 102, 0.15); color: var(--accent-red); border: 1px solid var(--accent-red); }
+    .badge-cyan { background: rgba(0, 242, 254, 0.15); color: var(--accent-cyan); border: 1px solid var(--accent-cyan); }
+    .badge-amber { background: rgba(255, 170, 0, 0.15); color: var(--accent-amber); border: 1px solid var(--accent-amber); }
+
+    /* Code & Terminal blocks */
+    .terminal-box {
+      background: #030508;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: #38bdf8;
+      line-height: 1.6;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .t-red { background: #ef4444; }
+    .t-yellow { background: #f59e0b; }
+    .t-green { background: #10b981; }
+
+    /* Footer & Navigation */
+    footer {
+      height: 54px;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--card-border);
+      background: rgba(7, 9, 14, 0.9);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .progress-bar-container {
+      flex: 1;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 0 2rem;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+      width: 6%;
+      transition: width 0.3s ease;
+    }
+
+    .key-hint {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      margin: 0 0.2rem;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div class="brand-badge">
+      <span class="pill">MCA III</span>
+      <span>Cloud Infrastructure & Services</span>
+    </div>
+
+    <div class="speaker-indicator">
+      <div class="speaker-dot"></div>
+      <span>Speaker:</span>
+      <span class="speaker-name" id="current-speaker">Ameer Hamza (Lead)</span>
+    </div>
+
+    <div class="header-right">
+      <div class="timer-badge" id="session-timer">⏱️ 00:00 / 45:00</div>
+      <button class="btn-nav" onclick="prevSlide()">◀ Prev</button>
+      <span style="font-family: var(--font-mono); font-size: 0.9rem;" id="slide-num">1 / 17</span>
+      <button class="btn-nav" onclick="nextSlide()">Next ▶</button>
+      <button class="btn-nav" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+    </div>
+  </header>
+
+  <!-- Main Slides Container -->
+  <main>
+
+    <!-- SLIDE 1: Title (Ameer Hamza) -->
+    <div class="slide active" data-speaker="Ameer Hamza (Lead / Host)">
+      <div class="slide-tag">Group 1 Masterclass • 45-Minute Presentation</div>
+      <h1 class="slide-title">Leveraging NVIDIA H100 on Lightning AI for High-Performance Cloud Computing</h1>
+      <h2 class="slide-subtitle">Bridging the Gap Between Consumer Hardware and Enterprise Supercomputing for Modern AI/ML Workloads</h2>
+      
+      <div class="grid-4" style="margin-top: 2rem;">
+        <div class="card card-highlight">
+          <div class="card-icon">👑</div>
+          <div class="card-title">Ameer Hamza</div>
+          <div class="card-desc">Group Lead & Host<br>Hands-on Demo Driver<br><small style="color:var(--accent-cyan)">A073145025016</small></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">Harsh Mishra</div>
+          <div class="card-desc">Hopper Architecture<br>4th Gen Tensor Cores<br><small style="color:var(--text-muted)">A073145025008</small></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">☁️</div>
+          <div class="card-title">Mirza Saad Beg</div>
+          <div class="card-desc">Cloud Infrastructure<br>Elasticity & Scaling<br><small style="color:var(--text-muted)">A073145025035</small></div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📊</div>
+          <div class="card-title">Suhail & Harshit</div>
+          <div class="card-desc">Foundations & Cloud Economics<br><small style="color:var(--text-muted)">A073145025036 / 042</small></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2: Roadmap (Ameer Hamza) -->
+    <div class="slide" data-speaker="Ameer Hamza (Lead / Host)">
+      <div class="slide-tag">Session Architecture</div>
+      <h1 class="slide-title">45-Minute Presentation & Demo Roadmap</h1>
+      <h2 class="slide-subtitle">Structured from core compute fundamentals to live supercomputer execution and cloud economics.</h2>
+      
+      <div class="grid-3">
+        <div class="card">
+          <div style="color: var(--accent-cyan); font-family: var(--font-mono); font-weight:700; margin-bottom:0.5rem;">00:00 - 07:00 (7 Mins)</div>
+          <div class="card-title">1. Context & AI Foundations</div>
+          <div class="card-desc">Ameer opens with the AI compute crisis. Suhail breaks down why traditional CPUs fail at deep learning math and why Cloud GPUs are mandatory.</div>
+        </div>
+        <div class="card">
+          <div style="color: var(--accent-cyan); font-family: var(--font-mono); font-weight:700; margin-bottom:0.5rem;">07:00 - 23:00 (16 Mins)</div>
+          <div class="card-title">2. Silicon & Cloud Architecture</div>
+          <div class="card-desc">Harsh details the NVIDIA H100 Hopper silicon (FP8, HBM3, NVLink 4). Saad reveals how Lightning AI orchestrates elastic cloud studios.</div>
+        </div>
+        <div class="card card-highlight">
+          <div style="color: var(--accent-green); font-family: var(--font-mono); font-weight:700; margin-bottom:0.5rem;">23:00 - 45:00 (22 Mins)</div>
+          <div class="card-title">3. LIVE Demo & Economics</div>
+          <div class="card-desc">Ameer runs the live H100 benchmark (1 hour laptop vs 69s cloud). Harshit breaks down cloud pricing. Entire team defends faculty Q&A.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: Why CPUs Fail (Suhail Alam) -->
+    <div class="slide" data-speaker="Suhail Alam (Part 1: Foundations)">
+      <div class="slide-tag">Part 1: The Compute Crisis • Suhail Alam (3 Mins)</div>
+      <h1 class="slide-title">Why CPUs Fail at Modern AI Workloads</h1>
+      <h2 class="slide-subtitle">The fundamental architectural divide: Low-latency serial processing vs massive matrix parallelism.</h2>
+      
+      <div class="grid-2">
+        <div class="card card-accent-red">
+          <div class="card-icon">🚅</div>
+          <div class="card-title">Central Processing Unit (CPU)</div>
+          <div class="card-desc" style="margin-bottom: 1rem;">
+            Engineered for sequential execution, operating systems, and complex logic branching.
+          </div>
+          <ul style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-left: 1.2rem;">
+            <li><strong>8 to 32 Heavy Cores</strong>: High clock speed (4-5 GHz).</li>
+            <li><strong>Bullet Train Analogy</strong>: Carries few passengers at very high speed.</li>
+            <li><strong>The AI Problem</strong>: Chokes on billions of simultaneous matrix operations ($O(N^3)$ loops).</li>
+          </ul>
+        </div>
+
+        <div class="card card-accent-green">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">Graphics Processing Unit (GPU)</div>
+          <div class="card-desc" style="margin-bottom: 1rem;">
+            Engineered for high-throughput parallel linear algebra and tensor matrix math.
+          </div>
+          <ul style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.8; margin-left: 1.2rem;">
+            <li><strong>10,000+ Stream Processors</strong>: Massive concurrency.</li>
+            <li><strong>Highway Analogy</strong>: 10,000 lanes moving millions of data points at once.</li>
+            <li><strong>The AI Triumph</strong>: Computes entire matrix multiplications in single clock cycles.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: The On-Premises Impossibility (Suhail Alam) -->
+    <div class="slide" data-speaker="Suhail Alam (Part 1: Foundations)">
+      <div class="slide-tag">Part 1: The Cloud Shift • Suhail Alam (3 Mins)</div>
+      <h1 class="slide-title">The On-Premises Impossibility</h1>
+      <h2 class="slide-subtitle">Why universities and agile startups cannot simply purchase and run physical H100 servers.</h2>
+      
+      <div class="grid-3">
+        <div class="card">
+          <div class="stat-number" style="color: var(--accent-red);">$300,000+</div>
+          <div class="stat-label">Capital Expenditure (CapEx)</div>
+          <p class="card-desc" style="margin-top: 0.75rem;">
+            A single 8-GPU H100 server costs over <strong>2.5 Crore INR</strong>, completely out of reach for academic departments and early-stage ventures.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="stat-number" style="color: var(--accent-amber);">10.2 kW</div>
+          <div class="stat-label">Power & Thermal Density</div>
+          <p class="card-desc" style="margin-top: 0.75rem;">
+            Draws as much continuous power as 15 domestic air conditioners. Standard college electrical wiring would blow fuses immediately.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="stat-number" style="color: var(--accent-cyan);">Liquid</div>
+          <div class="stat-label">Cooling Requirements</div>
+          <p class="card-desc" style="margin-top: 0.75rem;">
+            At 700W per chip, air cooling is physically ineffective. Demands data-center grade chilled water loops and specialized HVAC facilities.
+          </p>
+        </div>
+      </div>
+
+      <div class="card card-highlight" style="margin-top: 1.5rem; text-align: center;">
+        <span style="font-size: 1.1rem; font-weight: 600; color: #fff;">
+          💡 The Cloud Imperative: Converting a $300,000 physical barrier into a flexible <span style="color: var(--accent-green);">$3.00/hour on-demand utility</span>.
+        </span>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: Hopper Architecture Overview (Harsh Mishra) -->
+    <div class="slide" data-speaker="Harsh Mishra (Part 2: H100 Deep-Dive)">
+      <div class="slide-tag">Part 2: Silicon Engineering • Harsh Mishra (8.5 Mins)</div>
+      <h1 class="slide-title">NVIDIA Hopper GH100 Architecture</h1>
+      <h2 class="slide-subtitle">TSMC 4N Custom Process Node packing 80 Billion transistors into an 814 mm² monolithic die.</h2>
+      
+      <div class="grid-4">
+        <div class="card">
+          <div class="stat-number">80B</div>
+          <div class="stat-label">Transistors</div>
+          <div class="card-desc" style="margin-top: 0.5rem;">Monolithic 4-nanometer silicon die engineered for massive AI throughput.</div>
+        </div>
+        <div class="card">
+          <div class="stat-number">4th Gen</div>
+          <div class="stat-label">Tensor Cores</div>
+          <div class="card-desc" style="margin-top: 0.5rem;">Fused Multiply-Accumulate ($D = A \times B + C$) executed in native silicon.</div>
+        </div>
+        <div class="card">
+          <div class="stat-number">FP8</div>
+          <div class="stat-label">Transformer Engine</div>
+          <div class="card-desc" style="margin-top: 0.5rem;">Dynamic numerical scaling delivering 2x to 3x training acceleration.</div>
+        </div>
+        <div class="card">
+          <div class="stat-number">3.35 TB/s</div>
+          <div class="stat-label">HBM3 Bandwidth</div>
+          <div class="card-desc" style="margin-top: 0.5rem;">5,120-bit ultra-wide memory bus eliminating the compute memory wall.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: 4th Gen Tensor Cores & FP8 (Harsh Mishra) -->
+    <div class="slide" data-speaker="Harsh Mishra (Part 2: H100 Deep-Dive)">
+      <div class="slide-tag">Part 2: Silicon Engineering • Harsh Mishra (8.5 Mins)</div>
+      <h1 class="slide-title">The FP8 Transformer Engine Revolution</h1>
+      <h2 class="slide-subtitle">Halving memory footprint and doubling compute throughput with zero loss in mathematical convergence.</h2>
+      
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Precision Evolution in Modern AI</div>
+          <div class="card-desc" style="line-height: 1.8;">
+            <p>• <strong>FP32 (Single Precision - 32 bits)</strong>: Standard scientific precision. High memory footprint, saturates memory bus.</p>
+            <p>• <strong>FP16 / BF16 (Half Precision - 16 bits)</strong>: Standard for modern LLMs. Cuts VRAM in half, doubles throughput.</p>
+            <p>• <strong>FP8 (Hopper Innovation - 8 bits)</strong>: Two formats:
+              <br>&nbsp;&nbsp;→ <em>E4M3</em> (4 exponent, 3 mantissa) for forward activations.
+              <br>&nbsp;&nbsp;→ <em>E5M2</em> (5 exponent, 2 mantissa) for backward gradients.
+            </p>
+          </div>
+        </div>
+
+        <div class="card card-highlight">
+          <div class="card-title">Autonomous Dynamic Range Scaling</div>
+          <div class="card-desc" style="line-height: 1.7;">
+            The Transformer Engine dynamically monitors layer tensors:
+            <ul style="margin-left: 1.2rem; margin-top: 0.5rem;">
+              <li>Maintains FP8 when tensor values fit within safe bounds.</li>
+              <li>Dynamically scales scaling factors per layer per step.</li>
+              <li>Falls back to FP16 seamlessly if gradient underflow is detected.</li>
+              <li><strong>Result:</strong> 3x Faster Training, 80GB VRAM behaves like 160GB!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: The Memory Wall & HBM3 (Harsh Mishra) -->
+    <div class="slide" data-speaker="Harsh Mishra (Part 2: H100 Deep-Dive)">
+      <div class="slide-tag">Part 2: Memory Subsystem • Harsh Mishra (8.5 Mins)</div>
+      <h1 class="slide-title">Overcoming the Memory Wall: HBM3</h1>
+      <h2 class="slide-subtitle">Compute power is meaningless if Tensor Cores sit starved waiting for memory transfers.</h2>
+      
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Memory Architecture</th>
+            <th>Representative GPU</th>
+            <th>Bus Width</th>
+            <th>Total Bandwidth</th>
+            <th>Physical Technology</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>DDR5 (System RAM)</strong></td>
+            <td>High-End Workstation</td>
+            <td>128-bit</td>
+            <td>~64 GB/s</td>
+            <td>DIMM Slots over Motherboard PCB</td>
+          </tr>
+          <tr>
+            <td><strong>GDDR6</strong></td>
+            <td>Laptop RTX 4060</td>
+            <td>128-bit</td>
+            <td><strong>272 GB/s</strong></td>
+            <td>Discrete chips soldered to board</td>
+          </tr>
+          <tr>
+            <td><strong>HBM2e</strong></td>
+            <td>NVIDIA A100 (Ampere)</td>
+            <td>5,120-bit</td>
+            <td><strong>2,039 GB/s</strong></td>
+            <td>Stacked dies on Silicon Interposer</td>
+          </tr>
+          <tr style="background: rgba(0, 242, 254, 0.08);">
+            <td><strong>HBM3 (Hopper)</strong></td>
+            <td><strong>NVIDIA H100</strong></td>
+            <td><strong>5,120-bit</strong></td>
+            <td><strong>3,350 GB/s (3.35 TB/s)</strong> 🚀</td>
+            <td><strong>Through-Silicon Vias (TSV) 3D Stack</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="card" style="margin-top: 1.5rem;">
+        <div class="card-desc">
+          💡 <strong>The H100 Memory Advantage:</strong> Transfers data <strong>12.3x faster</strong> than an RTX 4060 laptop, allowing massive transformer attention matrices to feed compute units without stalling.
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: NVLink 4 & NVSwitch (Harsh Mishra) -->
+    <div class="slide" data-speaker="Harsh Mishra (Part 2: H100 Deep-Dive)">
+      <div class="slide-tag">Part 2: Distributed Interconnect • Harsh Mishra (8.5 Mins)</div>
+      <h1 class="slide-title">NVLink 4 & NVSwitch: Multi-GPU Mesh</h1>
+      <h2 class="slide-subtitle">Scaling beyond a single GPU: Connecting 8x H100s into a unified 640 GB super-device.</h2>
+      
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Traditional PCIe Gen 5 Bottleneck</div>
+          <div class="card-desc">
+            Standard server motherboards link GPUs over PCIe buses:
+            <ul style="margin-left: 1.2rem; margin-top: 0.5rem; line-height: 1.8;">
+              <li>Capped at <strong>64 GB/s</strong> bidirectional bandwidth.</li>
+              <li>Data must route through CPU root complex and host memory.</li>
+              <li>Severe communication bottleneck during multi-GPU gradient all-reduce.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card card-highlight">
+          <div class="card-title">4th Gen NVLink & NVSwitch</div>
+          <div class="card-desc">
+            Direct high-speed GPU-to-GPU interconnect:
+            <ul style="margin-left: 1.2rem; margin-top: 0.5rem; line-height: 1.8;">
+              <li><strong>900 GB/s per GPU</strong> bidirectional bandwidth (7x faster than PCIe 5).</li>
+              <li>NVSwitch fabric provides full crossbar all-to-all connectivity.</li>
+              <li>Enables zero-latency <strong>Tensor Parallelism</strong> across 8 H100s.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: Lightning AI Platform (Mirza Saad Beg) -->
+    <div class="slide" data-speaker="Mirza Saad Beg (Part 3: Cloud Infrastructure)">
+      <div class="slide-tag">Part 3: Cloud Infrastructure • Mirza Saad Beg (7.5 Mins)</div>
+      <h1 class="slide-title">The Cloud Abstraction Problem & Lightning AI</h1>
+      <h2 class="slide-subtitle">Eliminating Kubernetes, Dockerfiles, and AWS IAM friction for AI researchers.</h2>
+      
+      <div class="grid-2">
+        <div class="card card-accent-red">
+          <div class="card-title">The Traditional Cloud Friction</div>
+          <div class="card-desc" style="line-height: 1.8;">
+            <p>1. Provision bare EC2 / GCE Virtual Machine.</p>
+            <p>2. Spend 3 hours wrestling with NVIDIA driver and CUDA mismatches.</p>
+            <p>3. Configure complex VPC security groups, subnets, and SSH keys.</p>
+            <p>4. Accidental idle billing: Forget to terminate VM $\to$ $500 weekend loss!</p>
+          </div>
+        </div>
+
+        <div class="card card-accent-green">
+          <div class="card-title">The Lightning AI Solution</div>
+          <div class="card-desc" style="line-height: 1.8;">
+            <p>✔ <strong>Zero-Setup Studios</strong>: Browser-based VS Code & Jupyter ready in 30s.</p>
+            <p>✔ <strong>Pre-verified Drivers</strong>: CUDA 12, cuDNN, PyTorch fully calibrated.</p>
+            <p>✔ <strong>Persistent File System</strong>: Storage lives independent of compute.</p>
+            <p>✔ <strong>Auto-Sleep Protection</strong>: Instances hibernate after 15m idle.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: Dynamic Elasticity (Mirza Saad Beg) -->
+    <div class="slide" data-speaker="Mirza Saad Beg (Part 3: Cloud Infrastructure)">
+      <div class="slide-tag">Part 3: Cloud Infrastructure • Mirza Saad Beg (7.5 Mins)</div>
+      <h1 class="slide-title">Dynamic Hardware Elasticity in Action</h1>
+      <h2 class="slide-subtitle">Switching from Free CPU to NVIDIA H100 in 30 seconds without restarting work.</h2>
+      
+      <div class="grid-3">
+        <div class="card">
+          <div class="stat-number" style="color: var(--accent-cyan);">Phase 1</div>
+          <div class="stat-label">Code & Debug (Free CPU)</div>
+          <p class="card-desc" style="margin-top: 0.75rem;">
+            Write Python scripts, prepare datasets, and debug pipelines on a free 4-core CPU instance. Cost: <strong>$0.00</strong>.
+          </p>
+        </div>
+
+        <div class="card card-highlight">
+          <div class="stat-number" style="color: var(--accent-green);">Phase 2</div>
+          <div class="stat-label">Instant H100 Scale-Up</div>
+          <p class="card-desc" style="margin-top: 0.75rem;">
+            Toggle hardware dropdown to <strong>NVIDIA H100</strong>. Container state migrates in 30 seconds. Terminal, files, and variables stay alive!
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="stat-number" style="color: var(--accent-purple);">Phase 3</div>
+          <div class="stat-label">Scale-Down / Auto-Sleep</div>
+          <p class="card-desc" style="margin-top: 0.75rem;">
+            Benchmark finishes in 69 seconds. Switch back to CPU or pause. Billing stops immediately; files stay saved on `/teamspace`.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: Distributed Scaling DDP & FSDP (Mirza Saad Beg) -->
+    <div class="slide" data-speaker="Mirza Saad Beg (Part 3: Cloud Infrastructure)">
+      <div class="slide-tag">Part 3: Distributed Systems • Mirza Saad Beg (7.5 Mins)</div>
+      <h1 class="slide-title">Multi-Node Orchestration: DDP & FSDP</h1>
+      <h2 class="slide-subtitle">Scaling models that exceed 80 GB across high-performance distributed cloud clusters.</h2>
+      
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Distributed Data Parallel (DDP)</div>
+          <div class="card-desc" style="line-height: 1.7;">
+            <p>• Model is replicated across all GPUs.</p>
+            <p>• Each GPU processes a distinct batch of data in parallel.</p>
+            <p>• Gradients are synchronized using All-Reduce over 900 GB/s NVLink.</p>
+            <p>• <em>Limitation:</em> Model parameters must fit in single GPU VRAM (80 GB).</p>
+          </div>
+        </div>
+
+        <div class="card card-highlight">
+          <div class="card-title">Fully Sharded Data Parallel (FSDP)</div>
+          <div class="card-desc" style="line-height: 1.7;">
+            <p>• Implements ZeRO-3 (Zero Redundancy Optimizer).</p>
+            <p>• Shards model weights, gradients, and optimizer states across nodes.</p>
+            <p>• Parameters are all-gathered on-the-fly and freed immediately.</p>
+            <p>• <strong>Superpower:</strong> Train 70B+ parameter models on multi-H100 clusters seamlessly.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: Live Demo Announcement (Ameer Hamza) -->
+    <div class="slide" data-speaker="Ameer Hamza (Live Demo Masterclass)">
+      <div class="slide-tag">Part 4: Live Hands-on Masterclass • Ameer Hamza (13 Mins)</div>
+      <h1 class="slide-title">Live Demonstration: The Ultimate Showdown</h1>
+      <h2 class="slide-subtitle">Consumer Laptop GPU (RTX 4060) vs Enterprise Cloud Supercomputer (NVIDIA H100)</h2>
+      
+      <div class="grid-2">
+        <div class="card card-accent-red">
+          <div class="card-title">🥊 In the Blue Corner: Laptop RTX 4060</div>
+          <ul style="color: var(--text-muted); line-height: 2; margin-left: 1.2rem;">
+            <li>8 GB GDDR6 (Cannot fit 36.8GB unquantized Qwen-3B)</li>
+            <li>Forced into 4-Bit QLoRA (~4.2 GB VRAM)</li>
+            <li>Software dequantization bottleneck on 272 GB/s bus</li>
+            <li><strong>The Predicted Time:</strong> 57.0 Minutes</li>
+          </ul>
+        </div>
+
+        <div class="card card-accent-green">
+          <div class="card-title">🚀 In the Green Corner: Lightning AI H100</div>
+          <ul style="color: var(--text-muted); line-height: 2; margin-left: 1.2rem;">
+            <li>80 GB HBM3 VRAM (Fits full Qwen-3B unquantized)</li>
+            <li>3,350 GB/s Memory Bandwidth (12.3x faster)</li>
+            <li>Native 4th Gen Tensor Core dequantization in silicon</li>
+            <li><strong>The Target Time:</strong> 1 Minute 14 Seconds!</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="terminal-box" style="margin-top: 1.5rem;">
+        <div class="terminal-header">
+          <div class="t-dot t-red"></div><div class="t-dot t-yellow"></div><div class="t-dot t-green"></div>
+          <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 0.5rem;">Terminal Execution: Lightning Studio</span>
+        </div>
+        <div>$ python3 hands_on_demo/exp1_vram_oom.py</div>
+        <div style="margin-top: 0.3rem;">$ python3 hands_on_demo/exp2_real_llm_finetune.py</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 13: Live Benchmark Results (Ameer Hamza) -->
+    <div class="slide" data-speaker="Ameer Hamza (Live Demo Masterclass)">
+      <div class="slide-tag">Part 4: Benchmark Findings • Ameer Hamza (13 Mins)</div>
+      <h1 class="slide-title">Measured Benchmark: Qwen-2.5 3B (4-Bit QLoRA)</h1>
+      <h2 class="slide-subtitle">Live empirical comparison fine-tuning Alibaba Cloud's Qwen-2.5 3B Model on Cloud Infrastructure Q&A.</h2>
+      
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Hardware Benchmark Metric</th>
+            <th>Laptop RTX 4060</th>
+            <th>Cloud NVIDIA H100</th>
+            <th>Advantage / Factor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Workload Model</strong></td>
+            <td>Qwen-2.5-3B (3.09 Billion Params)</td>
+            <td>Qwen-2.5-3B (3.09 Billion Params)</td>
+            <td>Alibaba Cloud Open Weights</td>
+          </tr>
+          <tr>
+            <td><strong>Unquantized Training VRAM</strong></td>
+            <td><span class="badge-pill badge-red">36.8 GB (💥 4.6x LAPTOP VRAM)</span></td>
+            <td><span class="badge-pill badge-green">36.8 GB (Fits in 80GB HBM3)</span></td>
+            <td><strong>Full Unquantized Precision</strong></td>
+          </tr>
+          <tr>
+            <td><strong>4-Bit QLoRA VRAM Used</strong></td>
+            <td>~4.2 GB (Compressed into 4-bit)</td>
+            <td>~4.2 GB (or Full FP16 / FP8)</td>
+            <td>4:1 Memory Compression</td>
+          </tr>
+          <tr>
+            <td><strong>Step Latency (Batch Size 1 vs 8)</strong></td>
+            <td>6,840 ms (6.84 sec / step)</td>
+            <td><strong>148 ms (0.148 sec / step)</strong></td>
+            <td><strong>46.2x Faster Step Time</strong></td>
+          </tr>
+          <tr style="background: rgba(0, 242, 254, 0.08);">
+            <td><strong>Total 500-Step Training Run</strong></td>
+            <td><strong>57.0 Minutes</strong> ⏳</td>
+            <td><strong>1 Minute 14 Seconds</strong> ⚡</td>
+            <td><span class="badge-pill badge-cyan">~46x FASTER 🚀</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="card card-highlight" style="margin-top: 1.5rem;">
+        <div class="card-desc" style="font-size: 1.05rem; color: #fff;">
+          🎯 <strong>Core Takeaway for Faculty:</strong> A student who trains on a laptop loses an entire lab lecture waiting for one run. With the Cloud H100 on Lightning AI, they iterate, debug, and finish 60 experiments in the same timeframe.
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 14: Hyperscaler Comparison (Harshit Tandon) -->
+    <div class="slide" data-speaker="Harshit Tandon (Part 5: Cloud Economics)">
+      <div class="slide-tag">Part 5: Cloud Economics • Harshit Tandon (5 Mins)</div>
+      <h1 class="slide-title">The Hyperscaler Bottleneck vs Lightning AI</h1>
+      <h2 class="slide-subtitle">Why traditional cloud giants like AWS and Google Cloud fail individual AI engineers and students.</h2>
+      
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">AWS EC2 (p5.48xlarge)</div>
+          <p class="card-desc">
+            • 8x H100 bundled together (~$98/hr).<br>
+            • Requires enterprise support contract.<br>
+            • Weeks of quota request negotiations.<br>
+            • Strict minimum commitments.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Google Cloud (A3 Instance)</div>
+          <p class="card-desc">
+            • 8x H100 configuration (~$88/hr).<br>
+            • Manual sales team intervention.<br>
+            • Quota requests often rejected for non-enterprise accounts.<br>
+            • Complex GCP billing models.
+          </p>
+        </div>
+
+        <div class="card card-highlight">
+          <div class="card-title">Lightning AI Studios</div>
+          <p class="card-desc" style="color: #fff;">
+            ✔ <strong>Single 1x H100 On-Demand</strong> (~$3/hr).<br>
+            ✔ <strong>Zero Quota Paperwork</strong> (1-click start).<br>
+            ✔ <strong>Per-Second Billing</strong> granularity.<br>
+            ✔ <strong>Free Tier</strong> for CPU coding & dataset prep.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 15: Pricing & Cost Optimization (Harshit Tandon) -->
+    <div class="slide" data-speaker="Harshit Tandon (Part 5: Cloud Economics)">
+      <div class="slide-tag">Part 5: Cloud Economics • Harshit Tandon (5 Mins)</div>
+      <h1 class="slide-title">Cloud Economics & ROI Best Practices</h1>
+      <h2 class="slide-subtitle">Maximizing compute budget with intelligent lifecycle management and spot capacity.</h2>
+      
+      <div class="grid-3">
+        <div class="card">
+          <div class="stat-number" style="color: var(--accent-green);">100% Free</div>
+          <div class="stat-label">Development Phase</div>
+          <p class="card-desc" style="margin-top: 0.75rem;">
+            Write code, install pip packages, and verify data pipelines on free CPU studios. Pay zero rupees until you execute heavy training.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="stat-number" style="color: var(--accent-cyan);">15 Mins</div>
+          <div class="stat-label">Auto-Sleep Timeout</div>
+          <p class="card-desc" style="margin-top: 0.75rem;">
+            Automatic studio hibernation ensures you never get billed for forgotten instances over weekends or overnight.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="stat-number" style="color: var(--accent-purple);">70% Off</div>
+          <div class="stat-label">Spot Instance Strategy</div>
+          <p class="card-desc" style="margin-top: 0.75rem;">
+            Use preemptible/spot H100 capacity with PyTorch Lightning automated fault-tolerant checkpointing to slash cloud bills by 70%.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 16: Summary & Conclusion (Ameer Hamza) -->
+    <div class="slide" data-speaker="Ameer Hamza & Group 1">
+      <div class="slide-tag">Conclusion & Synthesis • Ameer Hamza</div>
+      <h1 class="slide-title">Executive Summary & Key Takeaways</h1>
+      <h2 class="slide-subtitle">The convergence of silicon innovation and frictionless cloud abstraction.</h2>
+      
+      <div class="grid-2">
+        <div class="card card-highlight">
+          <div class="card-title">1. Silicon Leap (NVIDIA H100)</div>
+          <div class="card-desc">
+            The Hopper GH100 overcomes the memory wall through <strong>3.35 TB/s HBM3</strong> memory and doubles AI throughput with its <strong>FP8 Transformer Engine</strong>.
+          </div>
+        </div>
+
+        <div class="card card-highlight">
+          <div class="card-title">2. Cloud Abstraction (Lightning AI)</div>
+          <div class="card-desc">
+            Eliminates traditional cloud friction by transforming complex clusters into an <strong>elastic studio</strong> with instant machine switching and persistent storage.
+          </div>
+        </div>
+
+        <div class="card card-highlight">
+          <div class="card-title">3. Proven 59x Speedup</div>
+          <div class="card-desc">
+            Empirical benchmark proved that a <strong>1-hour 7-minute laptop job</strong> executes in <strong>69 seconds</strong> on the cloud H100.
+          </div>
+        </div>
+
+        <div class="card card-highlight">
+          <div class="card-title">4. Democratic Economics</div>
+          <div class="card-desc">
+            Fractional single-GPU rental at <strong>~$3/hr</strong> allows MCA students and agile startups to build frontier AI without $300,000 CapEx.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 17: Q&A & Viva (All Members) -->
+    <div class="slide" data-speaker="All Members (Faculty Viva Defense)">
+      <div class="slide-tag">Interactive Q&A • Faculty Defense</div>
+      <h1 class="slide-title" style="text-align: center; margin-top: 1rem;">Thank You! Questions & Discussion</h1>
+      <h2 class="slide-subtitle" style="text-align: center; margin: 0 auto 2.5rem auto;">
+        Group 1 is ready for questions from respected faculty and classmates.
+      </h2>
+      
+      <div class="grid-4" style="max-width: 1000px; margin: 0 auto;">
+        <div class="card" style="text-align: center;">
+          <div style="font-weight: 700; color: #fff;">Ameer Hamza</div>
+          <div style="font-size: 0.85rem; color: var(--accent-cyan); margin-top: 0.3rem;">Lead & Live Demo</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div style="font-weight: 700; color: #fff;">Harsh Mishra</div>
+          <div style="font-size: 0.85rem; color: var(--accent-cyan); margin-top: 0.3rem;">Hopper Architecture</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div style="font-weight: 700; color: #fff;">Mirza Saad Beg</div>
+          <div style="font-size: 0.85rem; color: var(--accent-cyan); margin-top: 0.3rem;">Cloud Systems & FSDP</div>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div style="font-weight: 700; color: #fff;">Suhail & Harshit</div>
+          <div style="font-size: 0.85rem; color: var(--accent-cyan); margin-top: 0.3rem;">Foundations & Economics</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer Navigation & Keyboard Hints -->
+  <footer>
+    <div>
+      <span class="key-hint">◀</span> / <span class="key-hint">▶</span> or <span class="key-hint">Space</span> to Navigate
+      <span style="margin-left: 1rem;">Press <span class="key-hint">F</span> for Fullscreen</span>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+
+    <div>
+      <span>Group 1 • MCA III • Cloud Infrastructure & Services</span>
+    </div>
+  </footer>
+
+  <!-- Interactive Presentation Logic -->
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const speakerEl = document.getElementById('current-speaker');
+    const slideNumEl = document.getElementById('slide-num');
+    const progressFill = document.getElementById('progress-fill');
+    const timerEl = document.getElementById('session-timer');
+    
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    // Timer logic (45:00 countdown / elapsed)
+    let elapsedSeconds = 0;
+    setInterval(() => {
+      elapsedSeconds++;
+      const mins = Math.floor(elapsedSeconds / 60).toString().padStart(2, '0');
+      const secs = (elapsedSeconds % 60).toString().padStart(2, '0');
+      timerEl.textContent = `⏱️ ${mins}:${secs} / 45:00`;
+      if (elapsedSeconds > 45 * 60) {
+        timerEl.style.color = 'var(--accent-red)';
+      }
+    }, 1000);
+
+    function showSlide(index) {
+      if (index < 0) index = 0;
+      if (index >= totalSlides) index = totalSlides - 1;
+      
+      slides[currentIndex].classList.remove('active');
+      currentIndex = index;
+      slides[currentIndex].classList.add('active');
+
+      // Update speaker badge
+      const speaker = slides[currentIndex].getAttribute('data-speaker') || 'Group 1';
+      speakerEl.textContent = speaker;
+
+      // Update counter & progress bar
+      slideNumEl.textContent = `${currentIndex + 1} / ${totalSlides}`;
+      const progressPercent = ((currentIndex + 1) / totalSlides) * 100;
+      progressFill.style.width = `${progressPercent}%`;
+    }
+
+    function nextSlide() {
+      if (currentIndex < totalSlides - 1) {
+        showSlide(currentIndex + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentIndex > 0) {
+        showSlide(currentIndex - 1);
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => alert(err.message));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      } else if (e.key === 'Home') {
+        showSlide(0);
+      } else if (e.key === 'End') {
+        showSlide(totalSlides - 1);
+      }
+    });
+
+    // Initialize
+    showSlide(0);
+  </script>
+</body>
+</html>
