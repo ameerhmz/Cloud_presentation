@@ -243,9 +243,11 @@
 
 > "Thank you, Saad. Respected professors and classmates, welcome to the live hands-on masterclass of our presentation.
 > 
-> We believe in real engineering, not mocked slides. Today, we are putting our local hardware—an **RTX 4060 laptop GPU**—directly head-to-head against our **Cloud NVIDIA H100 80GB on Lightning AI**.
+> We believe in real engineering, not mocked slides. Welcome to the ultimate hardware showdown:
+> - In the red corner, we have **Team Red**: our faithful, struggling **RTX 4060 laptop GPU** with 8 GB VRAM.
+> - In the green corner, we have **Team Green**: the 700-Watt supercomputing monster, **Cloud NVIDIA H100 SXM5 with 80 GB HBM3** on Lightning AI.
 > 
-> Let's step into our live Lightning Studio right now."
+> Let's step into our live Lightning Studio right now to witness the matchup."
 
 ---
 
