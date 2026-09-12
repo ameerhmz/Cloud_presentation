@@ -40,7 +40,7 @@ except ImportError:
 
 def print_banner(title):
     print("\n" + "=" * 76, flush=True)
-    print(f"  🚀 {title.upper()}", flush=True)
+    print(f"  {title.upper()}", flush=True)
     print("=" * 76, flush=True)
 
 
@@ -202,7 +202,7 @@ def main():
     laptop_est_sec = total_samples * 0.185
 
     print(f"\n============================================================================")
-    print(f"  🎯 STANDARDIZED COMPUTE DEMAND ({epochs:.1f} EPOCHS = {total_samples:,} TOTAL SAMPLES)")
+    print(f"  STANDARDIZED COMPUTE DEMAND ({epochs:.1f} EPOCHS = {total_samples:,} TOTAL SAMPLES)")
     print(f"============================================================================")
     print(f"  • Master Dataset Size     : {dataset_len} Cloud Curriculum Questions")
     print(f"  • Training Target         : {epochs:.1f} Epochs ({total_samples:,} Samples to Process)")
@@ -211,9 +211,9 @@ def main():
     print(f"  • Active Compute Node     : {gpu_name}")
     print(f"  • Available Physical VRAM : {total_vram_gb:.2f} GB" if is_cuda else "  • Available Compute       : Host CPU RAM")
     print(f"  • VRAM-Selected Batch     : Batch Size {batch_size} ({batch_reason})")
-    print(f"  • 🚀 REQUIRED GPU STEPS   : {total_steps:,} Steps")
+    print(f"  • REQUIRED GPU STEPS      : {total_steps:,} Steps")
     print(f"  --------------------------------------------------------------------------")
-    print(f"  💡 THE CLOUD ADVANTAGE EXPLAINED:")
+    print(f"  THE CLOUD ADVANTAGE EXPLAINED:")
     print(f"     Both machines must process the exact same {total_samples:,} questions:")
     print(f"     • On Cloud H100 (80 GB) : Fits Batch 16 ──► Swallows dataset in only {h100_steps} steps (~{h100_est_sec:.1f}s)")
     print(f"     • On Laptop 4060 (8 GB) : Capped at Batch 1 ──► Must grind through {total_steps} steps (~{laptop_est_sec:.1f}s)")
@@ -225,7 +225,7 @@ def main():
     model_dir = os.path.join(project_root, "model_weights")
     fine_tuned_dir = os.path.join(project_root, "fine_tuned_weights")
 
-    print(f"\n[1/5] 📥 Downloading & Storing Pre-Trained Weights in Project Root...")
+    print(f"\n[1/5] Downloading & Storing Pre-Trained Weights in Project Root...")
     print(f"      Target Directory : {model_dir}")
     print(f"      Hugging Face ID  : {model_id}")
     
@@ -261,12 +261,12 @@ def main():
             print("      • [VRAM Guard] Activated gradient checkpointing for 8 GB consumer GPU!")
 
     t_download_done = time.time()
-    print(f"      ✅ Model loaded successfully in {t_download_done - t_download_start:.2f}s!")
+    print(f"      [OK] Model loaded successfully in {t_download_done - t_download_start:.2f}s!")
 
     if os.path.exists(model_dir):
         files = [f for f in os.listdir(model_dir) if not f.startswith(".")]
         if files:
-            print(f"      📁 Verified Downloaded Files in '{os.path.basename(model_dir)}/':")
+            print(f"      Verified Downloaded Files in '{os.path.basename(model_dir)}/':")
             for f in sorted(files)[:6]:
                 f_path = os.path.join(model_dir, f)
                 if os.path.isfile(f_path):
@@ -278,7 +278,7 @@ def main():
     print(f"      • Total Architecture Parameters: {total_params:,} ({total_params/1e9:.2f} Billion Parameters)")
 
     # 2. Setup Parameter-Efficient Fine-Tuning (LoRA / Adapter Scheme)
-    print(f"\n[2/5] ⚙️  Configuring Parameter-Efficient Fine-Tuning (Adapter Head Tuning)...")
+    print(f"\n[2/5] Configuring Parameter-Efficient Fine-Tuning (Adapter Head Tuning)...")
     # Freeze lower transformer layers to save memory, keep top layers & lm_head trainable
     # This exactly mimics LoRA/adapter behavior: frozen base model + trainable adaptation weights
     for name, param in model.named_parameters():
@@ -298,7 +298,7 @@ def main():
 
     # 3. Baseline Model Generation BEFORE Fine-Tuning
     test_question = "What makes NVIDIA H100 Hopper superior to laptop GPUs for cloud training?"
-    print(f"\n[3/5] 🧪 Testing Pre-Trained Generation BEFORE Fine-Tuning:")
+    print(f"\n[3/5] Testing Pre-Trained Generation BEFORE Fine-Tuning:")
     print(f"      Prompt: '{test_question}'")
     baseline_output = generate_sample(model, tokenizer, device, test_question, max_new_tokens=45)
     print(f"      Raw Model Output: \"{baseline_output[:140]}...\"\n")
@@ -307,7 +307,7 @@ def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     dataset_path = os.path.join(script_dir, "dataset", "cloud_qa_dataset.json")
     qa_data = load_qa_dataset(dataset_path)
-    print(f"[4/5] 📚 Prepared Training Dataset: {len(qa_data)} MCA Cloud Curriculum Questions")
+    print(f"[4/5] Prepared Training Dataset: {len(qa_data)} MCA Cloud Curriculum Questions")
 
     # Prepare training samples
     formatted_samples = []
@@ -483,7 +483,7 @@ def main():
     laptop_equiv_time_sec = total_samples_processed * 0.185
 
     print_banner("TRAINING EXECUTION & HARDWARE COMPARISON")
-    print(f"📊 RUN TELEMETRY ({gpu_name}):")
+    print(f"RUN TELEMETRY ({gpu_name}):")
     print(f"   • Total Active Time       : {t_train_total:.2f}s ({t_train_total/60:.2f} min)")
     print(f"   • Total Samples Processed : {total_samples_processed:,} / {total_samples:,} questions ({(total_samples_processed/total_samples)*epochs:.1f} Epochs)")
     print(f"   • Steps Executed          : {len(step_times):,} / {total_steps} (Batch Size: {batch_size})")
@@ -493,10 +493,10 @@ def main():
     if is_cuda:
         print(f"   • Peak Allocated VRAM     : {torch.cuda.max_memory_allocated()/(1024**3):.2f} GB / {total_vram_gb:.1f} GB")
     print("-" * 76)
-    print(f"⚡ FIXED COMPUTE DEMAND COMPARISON ({total_samples_processed:,} QUESTIONS):")
+    print(f"FIXED COMPUTE DEMAND COMPARISON ({total_samples_processed:,} QUESTIONS):")
     print(f"   • Laptop RTX 4060 (8 GB)  : ~{laptop_equiv_time_sec:.1f} seconds (requires {total_samples_processed} sequential steps @ Batch 1)")
     print(f"   • Cloud NVIDIA H100 (80GB): ~{h100_equiv_time_sec:.1f} seconds (completes in only {math.ceil(total_samples_processed/16)} steps @ Batch 16)")
-    print(f"   • 🚀 CLOUD SPEEDUP FACTOR : ⚡ {speedup_factor:.1f}x FASTER ON H100")
+    print(f"   • CLOUD SPEEDUP FACTOR    : {speedup_factor:.1f}x FASTER ON H100")
     print(f"   • Architectural Reason    : 80 GB HBM3 memory ingests 16 samples per step in parallel,")
     print(f"                               eliminating 94% of the serial step iterations needed on a laptop!")
     print("=" * 76 + "\n")

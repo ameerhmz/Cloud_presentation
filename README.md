@@ -1,4 +1,4 @@
-# 🚀 CSIT805: Cloud Infrastructure and Services — Presentation Package
+# CSIT805: Cloud Infrastructure and Services — Presentation Package
 
 **Topic**: Leveraging NVIDIA H100 on Lightning AI for High-Performance Cloud Computing  
 **Date of Presentation**: 14/09/2026  
@@ -12,7 +12,7 @@
 
 ---
 
-## 📁 Project Directory Structure
+## Project Directory Structure
 
 ```
 .
@@ -45,7 +45,7 @@
 
 ---
 
-## 🖥️ How to Run the Presentation Slide Deck
+## How to Run the Presentation Slide Deck
 
 1. Open `presentation/index.html` in Google Chrome, Edge, or Safari.
 2. Press <kbd>F</kbd> (or click **Fullscreen** button) for projector view.
@@ -54,7 +54,7 @@
 
 ---
 
-## 🔬 How to Run the Live Hands-on Demo
+## How to Run the Live Hands-on Demo
 
 1. Open **[lightning.ai](https://lightning.ai)** and create/open a Studio.
 2. Switch hardware to **NVIDIA H100**.

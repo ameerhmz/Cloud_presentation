@@ -819,28 +819,21 @@
     <div class="controls-suite">
       <!-- 45-Min Stopwatch / Clock -->
       <div class="stopwatch-badge" id="session-stopwatch" onclick="toggleStopwatch()" title="Click to Pause/Play 45-Min Stopwatch">
-        <span>⏱️</span>
         <span id="stopwatch-display">00:00</span>
         <span style="color: var(--text-subtle);">/ 45:00</span>
       </div>
 
-      <button class="btn-action" onclick="toggleCueCard()" title="View Spoken Script Cue Card (Press 'S')">
-        <span>📝</span> Cue Card
-      </button>
+      <button class="btn-action" onclick="toggleCueCard()" title="View Spoken Script Cue Card (Press 'S')">Cue Card</button>
 
-      <button class="btn-action" onclick="toggleOverview()" title="Slide Grid Overview (Press 'O' or 'Esc')">
-        <span>🗂️</span> Overview
-      </button>
+      <button class="btn-action" onclick="toggleOverview()" title="Slide Grid Overview (Press 'O' or 'Esc')">Overview</button>
 
-      <button class="btn-action" id="laser-btn" onclick="toggleLaser()" title="Laser Pointer Tool (Press 'L')">
-        <span>🔴</span> Laser
-      </button>
+      <button class="btn-action" id="laser-btn" onclick="toggleLaser()" title="Laser Pointer Tool (Press 'L')">Laser</button>
 
       <button class="btn-action" onclick="prevSlide()" title="Previous Slide (Left Arrow)">◀</button>
       <div class="slide-counter-chip" id="slide-num">1 / 17</div>
       <button class="btn-action" onclick="nextSlide()" title="Next Slide (Right Arrow / Space)">▶</button>
 
-      <button class="btn-action" onclick="toggleFullscreen()" title="Toggle Fullscreen (Press 'F')">⛶</button>
+      <button class="btn-action" onclick="toggleFullscreen()" title="Toggle Fullscreen (Press 'F')">Fullscreen</button>
       <button class="btn-action" onclick="toggleHud()" title="Shortcuts (?)" style="padding: 0.38rem 0.6rem;">?</button>
     </div>
   </header>
@@ -860,7 +853,7 @@
       <div class="grid-5" style="margin-top: 1.5rem;">
         <!-- Member 1: Ameer Hamza -->
         <div class="card-member card-highlight">
-          <div class="member-avatar" style="background: rgba(56, 189, 248, 0.1); color: var(--accent-cyan);">🚀</div>
+          <div class="member-avatar" style="background: rgba(56, 189, 248, 0.1); color: var(--accent-cyan);">01</div>
           <div class="member-name">Ameer Hamza</div>
           <div class="member-role">Host & Live Demo Driver</div>
           <div class="member-desc">Empirical Benchmarking & Supercomputing Telemetry</div>
@@ -869,7 +862,7 @@
 
         <!-- Member 2: Suhail Alam -->
         <div class="card-member">
-          <div class="member-avatar" style="background: rgba(244, 63, 94, 0.1); color: var(--accent-rose);">🚅</div>
+          <div class="member-avatar" style="background: rgba(244, 63, 94, 0.1); color: var(--accent-rose);">02</div>
           <div class="member-name">Suhail Alam</div>
           <div class="member-role" style="color: var(--accent-rose);">Foundations & Limits</div>
           <div class="member-desc">The Compute Crisis & Why CPUs Fail at Modern AI</div>
@@ -878,7 +871,7 @@
 
         <!-- Member 3: Harsh Mishra -->
         <div class="card-member">
-          <div class="member-avatar" style="background: rgba(118, 185, 0, 0.1); color: var(--accent-nvidia);">⚡</div>
+          <div class="member-avatar" style="background: rgba(118, 185, 0, 0.1); color: var(--accent-nvidia);">03</div>
           <div class="member-name">Harsh Mishra</div>
           <div class="member-role" style="color: var(--accent-nvidia);">Hopper Architecture</div>
           <div class="member-desc">FP8 Tensor Cores & HBM3 High-Bandwidth Memory</div>
@@ -887,7 +880,7 @@
 
         <!-- Member 4: Mirza Saad Beg -->
         <div class="card-member">
-          <div class="member-avatar" style="background: rgba(96, 165, 250, 0.1); color: var(--accent-blue);">☁️</div>
+          <div class="member-avatar" style="background: rgba(96, 165, 250, 0.1); color: var(--accent-blue);">04</div>
           <div class="member-name">Mirza Saad Beg</div>
           <div class="member-role" style="color: var(--accent-blue);">Cloud Infrastructure</div>
           <div class="member-desc">Elastic Cloud Studios & Distributed FSDP Scaling</div>
@@ -896,7 +889,7 @@
 
         <!-- Member 5: Harshit Tandon -->
         <div class="card-member">
-          <div class="member-avatar" style="background: rgba(245, 158, 11, 0.1); color: var(--accent-amber);">📊</div>
+          <div class="member-avatar" style="background: rgba(245, 158, 11, 0.1); color: var(--accent-amber);">05</div>
           <div class="member-name">Harshit Tandon</div>
           <div class="member-role" style="color: var(--accent-amber);">Cloud Economics</div>
           <div class="member-desc">Hyperscaler Quotas, TCO & Cloud ROI Models</div>
@@ -979,14 +972,14 @@
             <div class="feature-row-val">Executes entire matrix Multiply-Accumulate ($D = A \times B + C$) operations directly in native hardware Tensor Cores.</div>
           </div>
           <div style="margin-top:0.75rem; text-align:right; font-family:var(--font-mono); font-size:0.85rem; color:var(--accent-emerald); font-weight:700;">
-            Peak Throughput: 989 TFLOPS (Hopper FP16) 🚀
+            Peak Throughput: 989 TFLOPS (Hopper FP16)
           </div>
         </div>
       </div>
 
       <div class="card card-highlight" style="margin-top:1.25rem; padding:0.9rem 1.25rem; text-align:center;">
         <span style="font-size:0.98rem; font-weight:600; color:#fff;">
-          ⚡ <strong>Architectural Verdict:</strong> A CPU attempts to calculate matrix elements sequentially; an H100 calculates entire weight layers at once across 528 Tensor Cores.
+          <strong>Architectural Verdict:</strong> A CPU attempts to calculate matrix elements sequentially; an H100 calculates entire weight layers at once across 528 Tensor Cores.
         </span>
       </div>
     </div>
@@ -1025,7 +1018,7 @@
 
       <div class="card card-highlight" style="margin-top: 1.5rem; text-align: center; padding: 1.1rem;">
         <span style="font-size: 1.05rem; font-weight: 600; color: #fff;">
-          💡 The Cloud Imperative: Converting a $300,000 physical barrier into a flexible <span style="color: var(--accent-emerald); font-weight: 700;">$3.00/hour on-demand utility</span>.
+          The Cloud Imperative: Converting a $300,000 physical barrier into a flexible <span style="color: var(--accent-emerald); font-weight: 700;">$3.00/hour on-demand utility</span>.
         </span>
       </div>
     </div>
@@ -1136,7 +1129,7 @@
             <td><strong>HBM3 (Hopper)</strong></td>
             <td><strong>NVIDIA H100 SXM5</strong></td>
             <td><strong>5,120-bit</strong></td>
-            <td><strong>3,350 GB/s (3.35 TB/s)</strong> 🚀</td>
+            <td><strong>3,350 GB/s (3.35 TB/s)</strong></td>
             <td><strong>Through-Silicon Vias (TSV) 3D Stack</strong></td>
           </tr>
         </tbody>
@@ -1144,7 +1137,7 @@
 
       <div class="card" style="margin-top: 1.25rem; padding: 1.1rem;">
         <div class="card-desc">
-          💡 <strong>The H100 Memory Advantage:</strong> Transfers data <strong>12.3x faster</strong> than an RTX 4060 laptop, allowing massive transformer attention matrices to feed compute units without stalling.
+          <strong>The H100 Memory Advantage:</strong> Transfers data <strong>12.3x faster</strong> than an RTX 4060 laptop, allowing massive transformer attention matrices to feed compute units without stalling.
         </div>
       </div>
     </div>
@@ -1304,9 +1297,9 @@
       
       <!-- View Switcher Tabs -->
       <div class="view-switcher">
-        <button class="view-btn active" onclick="switchBenchmarkView('view-graphs', this)">📊 Visual Comparison Graphs</button>
-        <button class="view-btn" onclick="switchBenchmarkView('view-table', this)">📋 Detailed Telemetry Table</button>
-        <button class="view-btn" onclick="switchBenchmarkView('view-image', this)">🖼️ Publication Matrix (4K)</button>
+        <button class="view-btn active" onclick="switchBenchmarkView('view-graphs', this)">Visual Comparison Graphs</button>
+        <button class="view-btn" onclick="switchBenchmarkView('view-table', this)">Detailed Telemetry Table</button>
+        <button class="view-btn" onclick="switchBenchmarkView('view-image', this)">Publication Matrix (4K)</button>
       </div>
 
       <!-- VIEW 1: Visual Graphs (Default) -->
@@ -1423,7 +1416,7 @@
               <td><strong>Exp 1: VRAM Wall (12GB Allocation)</strong></td>
               <td><span class="badge-pill badge-red">Fatal Crash (Immediate OOM)</span></td>
               <td><span class="badge-pill badge-red">CUDA Out of Memory</span></td>
-              <td><span class="badge-pill badge-green">✔ 144 ms (67 GB Free)</span></td>
+              <td><span class="badge-pill badge-green">144 ms (67 GB Free)</span></td>
               <td><strong>Zero OOM Crashes</strong></td>
             </tr>
             <tr>
@@ -1431,7 +1424,7 @@
               <td><span class="badge-pill badge-red">Cannot Load (3B > 4GB)</span></td>
               <td>64.0s (5.4 smp/s, Batch 1)</td>
               <td><strong>2.3s (147.2 smp/s, Batch 16)</strong></td>
-              <td><span class="badge-pill badge-cyan">⚡ 27.8x FASTER</span></td>
+              <td><span class="badge-pill badge-cyan">27.8x FASTER</span></td>
             </tr>
             <tr>
               <td><strong>Exp 3: Interactive LLM Serving</strong></td>
@@ -1445,7 +1438,7 @@
               <td><span class="badge-pill badge-red">Crash (KV-Cache Exhaustion)</span></td>
               <td>~25.7 sec (75.2 tok/s serial queue)</td>
               <td><strong>1.35 sec (1,480.5 tok/s batch)</strong></td>
-              <td><span class="badge-pill badge-cyan">⚡ 19.7x CONCURRENCY</span></td>
+              <td><span class="badge-pill badge-cyan">19.7x CONCURRENCY</span></td>
             </tr>
           </tbody>
         </table>
@@ -1458,7 +1451,7 @@
 
       <div class="card card-highlight" style="margin-top: 1rem; padding: 0.85rem 1.25rem;">
         <div class="card-desc" style="font-size: 0.95rem; color: #fff;">
-          🎯 <strong>Core Architectural Conclusion:</strong> Consumer GPUs below 4060 (3050/2050) crash immediately on 3B models. The RTX 4060 runs but is strangled to sequential Batch 1. The Cloud H100 provides enterprise 80GB HBM3 bandwidth, swallowing datasets in 2.3s and scaling to 16 concurrent users with zero queuing.
+          <strong>Core Architectural Conclusion:</strong> Consumer GPUs below 4060 (3050/2050) crash immediately on 3B models. The RTX 4060 runs but is strangled to sequential Batch 1. The Cloud H100 provides enterprise 80GB HBM3 bandwidth, swallowing datasets in 2.3s and scaling to 16 concurrent users with zero queuing.
         </div>
       </div>
     </div>
@@ -1940,7 +1933,7 @@
             <div class="overview-num">SLIDE ${String(idx + 1).padStart(2, '0')}</div>
             <div class="overview-title">${title.length > 48 ? title.substring(0, 48) + '...' : title}</div>
           </div>
-          <div class="overview-speaker">🎤 ${speaker}</div>
+          <div class="overview-speaker">${speaker}</div>
         `;
         grid.appendChild(card);
       });

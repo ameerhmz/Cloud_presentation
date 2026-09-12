@@ -61,7 +61,7 @@ def main():
     selected = MODEL_REGISTRY[args.model]
 
     print("=" * 76, flush=True)
-    print(f"  🚀 AUTOMATED PRE-DOWNLOAD: {selected['name'].upper()}", flush=True)
+    print(f"  AUTOMATED PRE-DOWNLOAD: {selected['name'].upper()}", flush=True)
     print("=" * 76, flush=True)
     print(f"[*] Hugging Face Repo : {selected['repo']}", flush=True)
     print(f"[*] Target Directory  : {selected['dir']}", flush=True)
@@ -81,7 +81,7 @@ def main():
             max_workers=4
         )
         print("\n" + "=" * 76, flush=True)
-        print(f"  🎉 ALL ASSETS DOWNLOADED SUCCESSFULLY FOR {selected['repo']}!", flush=True)
+        print(f"  [SUCCESS] ALL ASSETS DOWNLOADED FOR {selected['repo']}!", flush=True)
         print(f"  Saved locally in: {download_path}", flush=True)
         print("  You can now run 'python3 exp2_real_llm_finetune.py' with zero internet!", flush=True)
         print("=" * 76 + "\n", flush=True)

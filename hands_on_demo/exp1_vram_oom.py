@@ -20,7 +20,7 @@ except ImportError:
 
 def print_banner(title):
     print("\n" + "=" * 76)
-    print(f"  🚀 {title.upper()}")
+    print(f"  {title.upper()}")
     print("=" * 76)
 
 
@@ -45,8 +45,8 @@ def main():
 
     if not torch.cuda.is_available():
         print("[INFO] Simulating allocation behavior for presentation:")
-        print("  • On Laptop RTX 4060 (8 GB VRAM) : 💥 CRASH with 'CUDA out of memory' error.")
-        print("  • On Cloud NVIDIA H100 (80 GB VRAM): ✔ SUCCESS! Uses 12 GB, leaving 68 GB free.")
+        print("  • On Laptop RTX 4060 (8 GB VRAM) : CRASH with 'CUDA out of memory' error.")
+        print("  • On Cloud NVIDIA H100 (80 GB VRAM): SUCCESS! Uses 12 GB, leaving 68 GB free.")
         print("=" * 76 + "\n")
         return
 
@@ -67,20 +67,20 @@ def main():
         allocated = torch.cuda.memory_allocated(0) / (1024 ** 3)
         free_vram = total_vram - allocated
 
-        print(f"[✔] SUCCESS! Allocated {allocated:.2f} GB in {alloc_time*1000:.2f} ms on {gpu_name}!")
-        print(f"[✔] Headroom Remaining: {free_vram:.2f} GB FREE for model weights, KV cache, and optimizer!")
-        print(f"\n[*] 📊 Holding 12.0 GB in VRAM for 10 seconds to update Studio UI graph...")
+        print(f"[SUCCESS] Allocated {allocated:.2f} GB in {alloc_time*1000:.2f} ms on {gpu_name}!")
+        print(f"[SUCCESS] Headroom Remaining: {free_vram:.2f} GB FREE for model weights, KV cache, and optimizer!")
+        print(f"\n[*] Holding 12.0 GB in VRAM for 10 seconds to update Studio UI graph...")
         for remaining in range(10, 0, -1):
-            print(f"    ⏳ Active in HBM3 VRAM... {remaining}s remaining (check the top-bar RAM/GPU graph!)", end="\r", flush=True)
+            print(f"    Active in HBM3 VRAM... {remaining}s remaining (check the top-bar RAM/GPU graph!)", end="\r", flush=True)
             time.sleep(1)
-        print("    ✔ 10s hold complete! Releasing memory back to system pool.                  ")
+        print("    10s hold complete! Releasing memory back to system pool.                  ")
 
         print("\n" + "-" * 76)
         print("  +-------------------------------------------------------------------+")
-        print("  |                  EXPERIMENT 1 RESULT: PASSED                     |")
+        print("  |                  EXPERIMENT 1 RESULT: PASSED                      |")
         print("  +-----------------------------------+-------------------------------+ ")
-        print("  | Laptop RTX 4060 (8 GB Ceiling)    | 💥 CRASH: CUDA Out Of Memory  |")
-        print(f"  | Cloud NVIDIA H100 (80 GB Ceiling) | ✔ SUCCESS ({free_vram:.1f} GB Headroom) |")
+        print("  | Laptop RTX 4060 (8 GB Ceiling)    | CRASH: CUDA Out Of Memory     |")
+        print(f"  | Cloud NVIDIA H100 (80 GB Ceiling) | SUCCESS ({free_vram:.1f} GB Headroom)   |")
         print("  +-----------------------------------+-------------------------------+ ")
         print("-" * 76)
         
@@ -88,7 +88,7 @@ def main():
         torch.cuda.empty_cache()
 
     except torch.cuda.OutOfMemoryError:
-        print("[💥] BOOM! Caught Expected CUDA OutOfMemoryError:")
+        print("[ERROR] Caught Expected CUDA OutOfMemoryError:")
         print(f"     >>> RuntimeError: CUDA out of memory. Tried to allocate 12.00 GiB")
         print(f"     >>> GPU 0 has only {total_vram} GiB total physical capacity!")
         print("\n" + "-" * 76)

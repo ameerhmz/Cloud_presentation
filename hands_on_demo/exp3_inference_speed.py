@@ -39,7 +39,7 @@ except ImportError:
 
 def print_banner(title):
     print("\n" + "=" * 76, flush=True)
-    print(f"  🚀 {title.upper()}", flush=True)
+    print(f"  {title.upper()}", flush=True)
     print("=" * 76, flush=True)
 
 
@@ -165,11 +165,11 @@ def run_stress_test(model, tokenizer, device, is_cuda, total_vram_gb, num_users=
     print(f"[*] Workload Architecture  : {num_users} Concurrent Client Streams Batched into Parallel Tensor Cores")
     print(f"[*] Memory Saturation      : Ingesting all {num_users} prompt streams simultaneously via HBM3")
     print("-" * 80, flush=True)
-    print(f"🚀 DISPATCHING {num_users} SIMULTANEOUS REQUESTS TO GPU TENSOR CORES...")
+    print(f"[*] DISPATCHING {num_users} SIMULTANEOUS REQUESTS TO GPU TENSOR CORES...")
     print("-" * 80, flush=True)
 
     for i, q in enumerate(questions, 1):
-        print(f"  [User #{i:02d}] 👤 \"{q}\"", flush=True)
+        print(f"  [User #{i:02d}] \"{q}\"", flush=True)
 
     batch_inputs = tokenizer(
         formatted_prompts,
@@ -198,7 +198,7 @@ def run_stress_test(model, tokenizer, device, is_cuda, total_vram_gb, num_users=
 
     total_tokens = 0
     print("\n" + "=" * 80, flush=True)
-    print(f"🤖 LIVE RESPONSES (GENERATED SIMULTANEOUSLY IN {elapsed:.2f} SECONDS):", flush=True)
+    print(f"LIVE RESPONSES (GENERATED SIMULTANEOUSLY IN {elapsed:.2f} SECONDS):", flush=True)
     print("=" * 80, flush=True)
 
     for i in range(num_users):
@@ -207,25 +207,25 @@ def run_stress_test(model, tokenizer, device, is_cuda, total_vram_gb, num_users=
         total_tokens += count
         reply = tokenizer.decode(output_ids, skip_special_tokens=True).strip()
         preview = reply.replace("\n", " ")[:105]
-        print(f"  [User #{i+1:02d}] 💬 ({count} tokens) ──► \"{preview}...\"", flush=True)
+        print(f"  [User #{i+1:02d}] ({count} tokens) ──► \"{preview}...\"", flush=True)
 
     tps = total_tokens / elapsed if elapsed > 0 else 0
     laptop_serial_sec = total_tokens / 28.0  # RTX 4060 single-queue baseline @ ~28 tok/s
     speedup = max(1.0, laptop_serial_sec / max(0.01, elapsed))
 
     print("\n" + "=" * 80, flush=True)
-    print(f"  📊 ENTERPRISE CLOUD SERVING TELEMETRY ({num_users} CONCURRENT USERS)", flush=True)
+    print(f"  ENTERPRISE CLOUD SERVING TELEMETRY ({num_users} CONCURRENT USERS)", flush=True)
     print("=" * 80, flush=True)
     print(f"  • Total Parallel Output       : {total_tokens:,} tokens generated")
     print(f"  • Cloud H100 Batch Latency    : {elapsed:.2f} seconds (all {num_users} users served simultaneously!)")
-    print(f"  • ⚡ AGGREGATE THROUGHPUT     : {tps:.1f} TOKENS / SECOND")
+    print(f"  • AGGREGATE THROUGHPUT        : {tps:.1f} TOKENS / SECOND")
     if is_cuda:
         peak_vram = torch.cuda.max_memory_allocated() / (1024**3)
         print(f"  • Peak Serving VRAM           : {peak_vram:.2f} GB / {total_vram_gb:.1f} GB")
     print(f"  ------------------------------------------------------------------------------")
     print(f"  • Laptop RTX 4060 Baseline    : ~{laptop_serial_sec:.1f} seconds ({laptop_serial_sec/60:.2f} minutes)")
     print(f"    (Laptop must queue users serially due to narrow 128-bit GDDR6 memory bus)")
-    print(f"  • 🚀 CLOUD SPEEDUP ADVANTAGE  : ⚡ {speedup:.1f}x FASTER ON H100")
+    print(f"  • CLOUD SPEEDUP ADVANTAGE     : {speedup:.1f}x FASTER ON H100")
     print(f"  • Architectural Reason        : 3.35 TB/s HBM3 Bandwidth enables parallel tensor batching")
     print("=" * 80 + "\n", flush=True)
 
@@ -261,7 +261,7 @@ def main():
     choice = args.mode
     if choice is None and args.prompt is None:
         print("\n" + "=" * 76)
-        print("  🎯 SELECT MODEL TO LOAD OR BENCHMARK:")
+        print("  SELECT MODEL TO LOAD OR BENCHMARK:")
         print("=" * 76)
         ft_status = "READY (Found in fine_tuned_weights/)" if has_fine_tuned else "NOT FOUND (Run exp2 first to generate)"
         base_status = "READY (Found in model_weights/)" if has_base else "WILL DOWNLOAD from Hugging Face"
@@ -270,11 +270,11 @@ def main():
         print(f"      • Status: {ft_status}")
         print(f"  [2] Base Foundation Model (Raw Qwen-2.5-3B-Instruct)")
         print(f"      • Status: {base_status}")
-        print(f"  [3] ⚡ Enterprise Multi-User Stress Test (16 Concurrent Users)")
+        print(f"  [3] Enterprise Multi-User Stress Test (16 Concurrent Users)")
         print(f"      • Simulates 16 simultaneous queries processed in parallel by H100")
         print("-" * 76)
         try:
-            user_sel = input("👉 Enter choice [1, 2, or 3] (Default: 1): ").strip()
+            user_sel = input("Enter choice [1, 2, or 3] (Default: 1): ").strip()
             choice = user_sel if user_sel in ["1", "2", "3", "stress"] else ("1" if has_fine_tuned else "2")
         except (KeyboardInterrupt, EOFError):
             print("\n[*] Exiting.")
@@ -304,7 +304,7 @@ def main():
 
     # Download base weights if needed
     if load_source == model_weights_dir and not has_base:
-        print(f"\n[*] 📥 Downloading Base Model Weights directly to: {model_weights_dir}", flush=True)
+        print(f"\n[*] Downloading Base Model Weights directly to: {model_weights_dir}", flush=True)
         try:
             from huggingface_hub import snapshot_download
             snapshot_download(
@@ -317,7 +317,7 @@ def main():
             print(f"    [Notice] Direct snapshot failed ({e}), loading directly from hub...", flush=True)
             load_source = args.model
 
-    print(f"\n[*] 📦 Loading Active Weights : {model_label}", flush=True)
+    print(f"\n[*] Loading Active Weights : {model_label}", flush=True)
     print(f"    Target Source Directory : {load_source}", flush=True)
     t0_load = time.time()
     tokenizer = AutoTokenizer.from_pretrained(load_source, cache_dir=model_weights_dir, trust_remote_code=True)
@@ -336,14 +336,14 @@ def main():
     t_load = time.time() - t0_load
 
     total_params = sum(p.numel() for p in model.parameters())
-    print(f"    ✅ Ready in {t_load:.2f}s ({total_params/1e9:.2f}B Parameters on {device})", flush=True)
+    print(f"    [OK] Ready in {t_load:.2f}s ({total_params/1e9:.2f}B Parameters on {device})", flush=True)
 
     # If user selected option 3, execute the 16-user enterprise stress test immediately
     if run_stress_first:
         run_stress_test(model, tokenizer, device, is_cuda, total_vram_gb, num_users=16, max_new_tokens=45)
         print("-" * 76)
         try:
-            cont = input("👉 Enter Interactive Chat Terminal with this model? [Y/n]: ").strip().lower()
+            cont = input("Enter Interactive Chat Terminal with this model? [Y/n]: ").strip().lower()
         except (KeyboardInterrupt, EOFError):
             cont = "n"
         if cont in ["n", "no"]:
@@ -352,18 +352,18 @@ def main():
 
     # Single Prompt Mode (if --prompt provided)
     if args.prompt:
-        print(f"\n👉 Question: {args.prompt}")
+        print(f"\nQuestion: {args.prompt}")
         print("-" * 76)
-        print("🤖 Assistant: ", end="", flush=True)
+        print("Assistant: ", end="", flush=True)
         tokens, elapsed, tps = stream_answer(model, tokenizer, device, args.prompt, args.max_new_tokens, is_cuda)
         print("-" * 76)
         vram_info = f" | VRAM: {torch.cuda.memory_allocated() / (1024**3):.2f} GB" if is_cuda else ""
-        print(f"⚡ [Telemetry: {tokens} tokens in {elapsed:.2f}s ({tps:.1f} tokens/sec){vram_info}]\n")
+        print(f"[Telemetry: {tokens} tokens in {elapsed:.2f}s ({tps:.1f} tokens/sec){vram_info}]\n")
         return
 
     # Interactive REPL Mode
     print("\n" + "=" * 76)
-    print("  💬 LIVE INTERACTIVE CHAT SESSION READY")
+    print("  LIVE INTERACTIVE CHAT SESSION READY")
     print("  • Type any question for the model (e.g. cloud architecture, viva concepts, code)")
     print("  • Type 'stress' or '3' anytime to trigger the 16-User Concurrent Stress Test!")
     print("  • Type 'exit' or 'quit' (or Ctrl+C) to return to shell")
@@ -373,7 +373,7 @@ def main():
     while True:
         try:
             print("-" * 76)
-            user_input = input("👉 Enter your question: ").strip()
+            user_input = input("Enter your question: ").strip()
         except (KeyboardInterrupt, EOFError):
             print("\n\n[*] Exiting interactive terminal session.")
             break
@@ -390,12 +390,12 @@ def main():
             continue
 
         query_count += 1
-        print("\n🤖 Assistant: ", end="", flush=True)
+        print("\nAssistant: ", end="", flush=True)
         tokens, elapsed, tps = stream_answer(model, tokenizer, device, user_input, args.max_new_tokens, is_cuda)
         print("-" * 76)
 
         vram_str = f" | VRAM: {torch.cuda.memory_allocated() / (1024**3):.2f} GB" if is_cuda else ""
-        print(f"⚡ [Telemetry: {tokens} tokens generated in {elapsed:.2f}s ({tps:.1f} tokens/sec){vram_str}]\n")
+        print(f"[Telemetry: {tokens} tokens generated in {elapsed:.2f}s ({tps:.1f} tokens/sec){vram_str}]\n")
 
 
 if __name__ == "__main__":

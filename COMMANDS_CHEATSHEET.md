@@ -1,11 +1,11 @@
-# 📋 MASTER COPY-PASTE COMMAND CHEAT SHEET
+# MASTER COPY-PASTE COMMAND CHEAT SHEET
 ### Course: CSIT805: Cloud Infrastructure and Services
 ### Topic: Leveraging NVIDIA H100 on Lightning AI for High-Performance Cloud Computing
 ### Presenter: Ameer Hamza (Group 1)
 
 ---
 
-## 💻 PART 1: RTX 4060 LAPTOP (Windows PowerShell / Command Prompt)
+## PART 1: RTX 4060 LAPTOP (Windows PowerShell / Command Prompt)
 
 ### 1. One-Time Setup & Clone
 ```bash
@@ -28,7 +28,7 @@ git pull
 
 ---
 
-### 🚀 Laptop Live Presentation Commands (Run in Order)
+### Laptop Live Presentation Commands (Run in Order)
 
 #### [Laptop Test 1] Experiment 1: The VRAM Capacity Wall (Allocating 12 GB)
 ```bash
@@ -83,7 +83,7 @@ git pull
 
 ---
 
-### 🚀 H100 Live Presentation Commands (Run in Order)
+### H100 Live Presentation Commands (Run in Order)
 
 #### [H100 Step 0] Verify the Monster Hardware
 ```bash
@@ -132,7 +132,7 @@ python exp4_enterprise_stress_test.py
 
 ---
 
-### 💰 PART 3: THE CLOUD ELASTICITY & COST-SAVING FINALE (2 Minutes)
+### PART 3: THE CLOUD ELASTICITY & COST-SAVING FINALE (2 Minutes)
 
 *When done presenting live on Lightning AI:*
 
@@ -147,9 +147,9 @@ ls -lh /teamspace/studios/this_studio/Cloud_presentation/fine_tuned_weights
 
 ---
 
-## ⚡ QUICK COPY-PASTE CHEAT CARDS
+## QUICK COPY-PASTE CHEAT CARDS
 
-### 💻 Laptop Fast Block
+### Laptop Fast Block
 ```bash
 cd Cloud_presentation/hands_on_demo
 git pull
@@ -159,7 +159,7 @@ python exp3_inference_speed.py
 python exp4_enterprise_stress_test.py
 ```
 
-### 🌩️ Lightning AI Fast Block
+### Lightning AI Fast Block
 ```bash
 cd /teamspace/studios/this_studio/Cloud_presentation/hands_on_demo
 git pull

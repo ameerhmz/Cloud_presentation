@@ -39,7 +39,7 @@ except ImportError:
 
 def print_banner(title):
     print("\n" + "=" * 80, flush=True)
-    print(f"  🚀 {title.upper()}", flush=True)
+    print(f"  {title.upper()}", flush=True)
     print("=" * 80, flush=True)
 
 
@@ -146,7 +146,7 @@ def main():
         load_source = args.model
         source_label = f"Hugging Face Hub ({args.model})"
 
-    print(f"\n[*] 📦 Initializing Weights from: {source_label}", flush=True)
+    print(f"\n[*] Initializing Weights from: {source_label}", flush=True)
     t0_load = time.time()
     tokenizer = AutoTokenizer.from_pretrained(load_source, cache_dir=model_weights_dir, trust_remote_code=True)
     tokenizer.padding_side = "left"
@@ -163,7 +163,7 @@ def main():
     model.to(device)
     model.eval()
     t_load = time.time() - t0_load
-    print(f"    ✅ Model ready for enterprise serving in {t_load:.2f}s!\n", flush=True)
+    print(f"    [OK] Model ready for enterprise serving in {t_load:.2f}s!\n", flush=True)
 
     # 2. Prepare 16 Concurrent Prompts
     selected_questions = ENTERPRISE_QUESTIONS[:num_users]
@@ -173,10 +173,10 @@ def main():
     ]
 
     print("-" * 80)
-    print(f"🚀 FIRING {num_users} SIMULTANEOUS USER REQUESTS TO GPU TENSOR CORES...")
+    print(f"[*] FIRING {num_users} SIMULTANEOUS USER REQUESTS TO GPU TENSOR CORES...")
     print("-" * 80)
     for i, q in enumerate(selected_questions, 1):
-        print(f"  [User #{i:02d}] 👤 \"{q}\"", flush=True)
+        print(f"  [User #{i:02d}] \"{q}\"", flush=True)
 
     # 3. Tokenize all 16 parallel requests simultaneously
     batch_inputs = tokenizer(
@@ -209,7 +209,7 @@ def main():
     # 5. Extract and Display Generated Answers
     total_tokens_generated = 0
     print("\n" + "=" * 80)
-    print(f"🤖 COMPLETED RESPONSES (GENERATED SIMULTANEOUSLY IN {t_gen_elapsed:.2f} SECONDS):")
+    print(f"COMPLETED RESPONSES (GENERATED SIMULTANEOUSLY IN {t_gen_elapsed:.2f} SECONDS):")
     print("=" * 80)
 
     for i in range(num_users):
@@ -219,7 +219,7 @@ def main():
         decoded_reply = tokenizer.decode(output_ids, skip_special_tokens=True).strip()
         # Clean display preview
         preview = decoded_reply.replace("\n", " ")[:110]
-        print(f"  [User #{i+1:02d}] 💬 ({gen_count} tokens) ──► \"{preview}...\"", flush=True)
+        print(f"  [User #{i+1:02d}] ({gen_count} tokens) ──► \"{preview}...\"", flush=True)
 
     # 6. Aggregate Performance Telemetry
     aggregate_tps = total_tokens_generated / t_gen_elapsed if t_gen_elapsed > 0 else 0
@@ -227,18 +227,18 @@ def main():
     speedup_factor = max(1.0, laptop_serial_sec / max(0.01, t_gen_elapsed))
 
     print("\n" + "=" * 80)
-    print(f"  📊 ENTERPRISE CLOUD SERVING TELEMETRY ({num_users} USERS CONCURRENT)")
+    print(f"  ENTERPRISE CLOUD SERVING TELEMETRY ({num_users} USERS CONCURRENT)")
     print("=" * 80)
     print(f"  • Total Parallel Output       : {total_tokens_generated:,} tokens generated")
     print(f"  • Cloud H100 Latency          : {t_gen_elapsed:.2f} seconds (all {num_users} users served simultaneously!)")
-    print(f"  • ⚡ AGGREGATE THROUGHPUT     : {aggregate_tps:.1f} TOKENS / SECOND")
+    print(f"  • AGGREGATE THROUGHPUT        : {aggregate_tps:.1f} TOKENS / SECOND")
     if is_cuda:
         peak_vram = torch.cuda.max_memory_allocated() / (1024**3)
         print(f"  • Peak Serving VRAM           : {peak_vram:.2f} GB / {total_vram_gb:.1f} GB")
     print(f"  ------------------------------------------------------------------------------")
     print(f"  • Laptop RTX 4060 Baseline     : ~{laptop_serial_sec:.1f} seconds ({laptop_serial_sec/60:.2f} minutes)")
     print(f"    (Laptop must queue users serially due to narrow 128-bit GDDR6 memory bus)")
-    print(f"  • 🚀 CLOUD SPEEDUP ADVANTAGE  : ⚡ {speedup_factor:.1f}x FASTER ON H100")
+    print(f"  • CLOUD SPEEDUP ADVANTAGE     : {speedup_factor:.1f}x FASTER ON H100")
     print(f"  • Architectural Reason        : 3.35 TB/s HBM3 Bandwidth enables parallel batching")
     print("=" * 80 + "\n")
 
