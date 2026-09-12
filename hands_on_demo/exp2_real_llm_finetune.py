@@ -103,11 +103,34 @@ def generate_sample(model, tokenizer, device, prompt_text, max_new_tokens=40):
     return reply
 
 
+import argparse
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Real Hugging Face LLM Fine-Tuning Demo")
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="Qwen/Qwen2.5-1.5B-Instruct",
+        help="Hugging Face Model ID (default: Qwen/Qwen2.5-1.5B-Instruct [1.54 Billion Parameters])"
+    )
+    parser.add_argument(
+        "--steps",
+        type=int,
+        default=50,
+        help="Number of training steps to execute (default: 50)"
+    )
+    return parser.parse_args()
+
+
 def main():
-    print_banner("EXPERIMENT 2: GENUINE QWEN-2.5 LLM FINE-TUNING VIA HUGGING FACE")
-    print("  Official Model : Qwen/Qwen2.5-0.5B-Instruct (Real Weights from Hugging Face)")
+    args = parse_args()
+    model_id = args.model
+    total_steps = args.steps
+
+    print_banner(f"EXPERIMENT 2: GENUINE QWEN-2.5 LLM FINE-TUNING VIA HUGGING FACE")
+    print(f"  Official Model : {model_id}")
     print("  Curriculum     : Cloud Infrastructure & Services (MCA III)")
-    print("  Key Concept    : Comparing Consumer GPU Throughput vs Cloud H100 Accelerators")
+    print("  Key Concept    : Real Billion-Scale LLM: Consumer GPU vs Cloud H100 Accelerators")
     print("=" * 76)
 
     device, gpu_name, total_vram_gb, compute_dtype, is_cuda = get_hardware_info()
@@ -120,7 +143,6 @@ def main():
         print("[*] Compute Precision   : Float32 (CPU Fallback)")
 
     # 1. Download & Load Real Hugging Face Model
-    model_id = "Qwen/Qwen2.5-0.5B-Instruct"
     print(f"\n[1/5] 📥 Connecting to Hugging Face Hub...")
     print(f"      Downloading genuine pre-trained weights for: {model_id}")
     print(f"      (If already cached, loads instantly from ~/.cache/huggingface)")
@@ -142,7 +164,7 @@ def main():
 
     # Model parameter stats
     total_params = sum(p.numel() for p in model.parameters())
-    print(f"      • Total Architecture Parameters: {total_params:,} ({total_params/1e6:.1f}M)")
+    print(f"      • Total Architecture Parameters: {total_params:,} ({total_params/1e9:.2f} Billion Parameters)")
 
     # 2. Setup Parameter-Efficient Fine-Tuning (LoRA / Adapter Scheme)
     print(f"\n[2/5] ⚙️  Configuring Parameter-Efficient Fine-Tuning (Adapter Head Tuning)...")
@@ -151,10 +173,10 @@ def main():
     for name, param in model.named_parameters():
         param.requires_grad = False
 
-    # Unfreeze lm_head and final layer norm / final transformer block
-    trainable_modules = ["lm_head", "model.norm", "model.layers.23"]
+    # Dynamically unfreeze lm_head, model.norm, and the last transformer block
+    last_layer_idx = len(model.model.layers) - 1 if hasattr(model, "model") and hasattr(model.model, "layers") else -1
     for name, param in model.named_parameters():
-        if any(target in name for target in trainable_modules):
+        if "lm_head" in name or "model.norm" in name or (last_layer_idx >= 0 and f"model.layers.{last_layer_idx}." in name):
             param.requires_grad = True
 
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -190,7 +212,7 @@ def main():
         lr=2e-4,
         weight_decay=0.01
     )
-    total_steps = min(60, len(formatted_samples))
+
 
     # 5. Live Fine-Tuning Execution
     print_banner(f"STARTING LIVE FINE-TUNING ON {gpu_name}")
