@@ -330,9 +330,6 @@ def main():
     print(f"[*] Workload Target     : {epochs:.1f} Epochs ({total_samples:,} Total Questions)")
     print(f"[*] Hardware Execution  : {total_steps:,} Steps (Batch Size: {batch_size})")
     print(f"[*] Graceful Abort      : Press [Ctrl+C] at ANY time to pause and view comparative telemetry\n")
-    print("-" * 92)
-    print(f" {'STEP':^8} | {'PROGRESS':^16} | {'LOSS':^8} | {'TIME/SAMPLE':^13} | {'THROUGHPUT':^12} | {'ETA REMAIN':^12} | {'VRAM':^10}")
-    print("-" * 92)
 
     model.train()
     step_times = []
@@ -340,86 +337,106 @@ def main():
     total_tokens_processed = 0
     t_train_start = time.time()
 
-    # Determine display frequency based on step count
-    print_interval = 10 if total_steps >= 200 else (5 if total_steps >= 100 else 2)
+    num_epochs = max(1, math.ceil(total_samples / dataset_len)) if dataset_len > 0 else 1
+    samples_remaining = total_samples
+    global_step = 0
+    pbar = None
 
     try:
-        for step in range(total_steps):
-            t0 = time.time()
-            # Prepare batch of samples
-            batch_texts = [
-                formatted_samples[(step * batch_size + i) % len(formatted_samples)]
-                for i in range(batch_size)
-            ]
-            
-            # Real batch tokenization with padding
-            tokenizer.padding_side = "right"
-            encoded = tokenizer(
-                batch_texts,
-                padding=True,
-                truncation=True,
-                max_length=256,
-                return_tensors="pt"
-            ).to(device)
+        from tqdm import tqdm
+    except ImportError:
+        tqdm = None
 
-            input_ids = encoded["input_ids"]
-            attention_mask = encoded["attention_mask"]
-            batch_tokens_count = int(attention_mask.sum().item())
+    try:
+        for epoch in range(1, num_epochs + 1):
+            epoch_samples = min(dataset_len, samples_remaining)
+            epoch_steps = math.ceil(epoch_samples / batch_size)
 
-            # Real Forward Pass & Loss (pad tokens masked with -100)
-            optimizer.zero_grad()
-            labels = input_ids.clone()
-            labels[attention_mask == 0] = -100
+            pbar = tqdm(
+                total=epoch_samples,
+                desc=f"  Epoch {epoch}/{num_epochs}",
+                unit="smp",
+                bar_format="{desc}: {percentage:3.0f}%|{bar:22}| {n_fmt}/{total_fmt} smp [{elapsed}<{remaining}, {postfix}]",
+                dynamic_ncols=True,
+                leave=True
+            ) if tqdm else None
 
-            outputs = model(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                labels=labels
-            )
-            loss = outputs.loss
+            for step in range(epoch_steps):
+                t0 = time.time()
+                actual_step_samples = min(batch_size, epoch_samples - step * batch_size)
 
-            # Real Backward Pass
-            loss.backward()
-            torch.nn.utils.clip_grad_norm_([p for p in model.parameters() if p.requires_grad], max_norm=1.0)
-            optimizer.step()
+                # Prepare batch of samples
+                batch_texts = [
+                    formatted_samples[(global_step * batch_size + i) % len(formatted_samples)]
+                    for i in range(actual_step_samples)
+                ]
 
-            if is_cuda:
-                torch.cuda.synchronize()
+                # Real batch tokenization with padding
+                tokenizer.padding_side = "right"
+                encoded = tokenizer(
+                    batch_texts,
+                    padding=True,
+                    truncation=True,
+                    max_length=256,
+                    return_tensors="pt"
+                ).to(device)
 
-            t1 = time.time()
-            elapsed_step = t1 - t0
-            step_times.append(elapsed_step)
-            losses.append(loss.item())
-            total_tokens_processed += batch_tokens_count
-            tokens_per_sec = batch_tokens_count / elapsed_step if elapsed_step > 0 else 0
+                input_ids = encoded["input_ids"]
+                attention_mask = encoded["attention_mask"]
+                batch_tokens_count = int(attention_mask.sum().item())
 
-            # Calculate time per sample (crucial comparison metric)
-            ms_per_sample = (elapsed_step / batch_size) * 1000
+                # Real Forward Pass & Loss (pad tokens masked with -100)
+                optimizer.zero_grad()
+                labels = input_ids.clone()
+                labels[attention_mask == 0] = -100
 
-            # Calculate progress tracking
-            current_samples = min(total_samples, (step + 1) * batch_size)
-            pct = (current_samples / total_samples) * 100
-            prog_str = f"{current_samples}/{total_samples} ({pct:.0f}%)"
+                outputs = model(
+                    input_ids=input_ids,
+                    attention_mask=attention_mask,
+                    labels=labels
+                )
+                loss = outputs.loss
 
-            # Calculate live ETA
-            remaining_steps = total_steps - (step + 1)
-            eta_sec = remaining_steps * elapsed_step
-            if eta_sec >= 60:
-                eta_str = f"{eta_sec/60:.1f} min"
-            else:
-                eta_str = f"{eta_sec:.1f}s"
+                # Real Backward Pass
+                loss.backward()
+                torch.nn.utils.clip_grad_norm_([p for p in model.parameters() if p.requires_grad], max_norm=1.0)
+                optimizer.step()
 
-            if is_cuda:
-                vram_used = torch.cuda.memory_allocated() / (1024**3)
-                vram_str = f"{vram_used:.2f} GB"
-            else:
-                vram_str = "CPU RAM"
+                if is_cuda:
+                    torch.cuda.synchronize()
 
-            # Print based on step interval or on first/last step
-            if (step + 1) % print_interval == 0 or step == 0 or (step + 1) == total_steps:
-                print(f" {step+1:^4}/{total_steps:<3} | {prog_str:^16} | {loss.item():^8.4f} | {ms_per_sample:^9.1f}ms/smp | {tokens_per_sec:^10.1f} t/s | {eta_str:^12} | {vram_str:^10}", flush=True)
+                t1 = time.time()
+                elapsed_step = t1 - t0
+                step_times.append(elapsed_step)
+                losses.append(loss.item())
+                total_tokens_processed += batch_tokens_count
+
+                ms_per_sample = (elapsed_step / actual_step_samples) * 1000
+                smp_per_sec = actual_step_samples / elapsed_step if elapsed_step > 0 else 0
+
+                if is_cuda:
+                    vram_used = torch.cuda.memory_allocated() / (1024**3)
+                    vram_str = f"{vram_used:.2f}GB"
+                else:
+                    vram_str = "CPU RAM"
+
+                if pbar:
+                    pbar.update(actual_step_samples)
+                    pbar.set_postfix_str(f"loss={loss.item():.4f}, {ms_per_sample:.1f}ms/smp, {smp_per_sec:.1f}smp/s, {vram_str}")
+                else:
+                    current_samples = min(total_samples, (global_step + 1) * batch_size)
+                    print(f"  [Epoch {epoch}/{num_epochs}] Step {step+1}/{epoch_steps} ({current_samples}/{total_samples}) | Loss: {loss.item():.4f} | {ms_per_sample:.1f}ms/smp | {vram_str}")
+
+                global_step += 1
+
+            if pbar:
+                pbar.close()
+                pbar = None
+            samples_remaining -= epoch_samples
 
     except KeyboardInterrupt:
+        if pbar:
+            pbar.close()
         print("\n\n" + "!" * 76)
         print("  ⚠️  KEYBOARD INTERRUPT DETECTED (Graceful Demonstration Pause)")
         print(f"  Captured {len(losses)} completed real gradient steps successfully!")
@@ -428,7 +445,8 @@ def main():
     t_train_total = time.time() - t_train_start
     avg_step_sec = sum(step_times) / len(step_times) if step_times else 0.1
     avg_throughput = total_tokens_processed / t_train_total if t_train_total > 0 else 0
-    avg_ms_per_sample = (avg_step_sec / batch_size) * 1000
+    total_samples_processed = min(total_samples, len(step_times) * batch_size)
+    avg_ms_per_sample = (t_train_total / total_samples_processed * 1000) if total_samples_processed > 0 else 185.0
 
     # 6. Evaluation Generation AFTER Fine-Tuning
     print_banner("EVALUATING MODEL AFTER FINE-TUNING")
