@@ -119,6 +119,12 @@ def parse_args():
         default=50,
         help="Number of training steps to execute (default: 50)"
     )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=None,
+        help="Training batch size (default: auto-detected: 8 on H100 [~30-35GB VRAM], 1 on Laptop [8GB])"
+    )
     return parser.parse_args()
 
 
@@ -130,17 +136,30 @@ def main():
     print_banner(f"EXPERIMENT 2: GENUINE QWEN-2.5 LLM FINE-TUNING VIA HUGGING FACE")
     print(f"  Official Model : {model_id}")
     print("  Curriculum     : Cloud Infrastructure & Services (MCA III)")
-    print("  Key Concept    : Real Billion-Scale LLM: Consumer GPU vs Cloud H100 Accelerators")
+    print("  Key Concept    : High-Batch Enterprise Training: Full GPU & HBM3 Saturation")
     print("=" * 76)
 
     device, gpu_name, total_vram_gb, compute_dtype, is_cuda = get_hardware_info()
 
+    # Determine batch size dynamically according to hardware capacity
+    if args.batch_size is not None:
+        batch_size = max(1, args.batch_size)
+    else:
+        if total_vram_gb >= 60.0:
+            batch_size = 8   # Saturates H100: fills ~30-35 GB VRAM & 90%+ Tensor Core usage!
+        elif total_vram_gb >= 14.0:
+            batch_size = 2   # Safe for Tesla T4 (15 GB)
+        else:
+            batch_size = 1   # Safe for Laptop RTX 4060 (8 GB)
+
     print(f"\n[*] Active Compute Node : {gpu_name}")
     if is_cuda:
         print(f"[*] Available VRAM      : {total_vram_gb:.2f} GB")
+        print(f"[*] Batch Size Selected : {batch_size} samples / step")
         print(f"[*] Compute Precision   : {compute_dtype}")
     else:
         print("[*] Compute Precision   : Float32 (CPU Fallback)")
+        print(f"[*] Batch Size Selected : {batch_size} sample / step")
 
     # 1. Download & Load Real Hugging Face Model into Root Directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -269,11 +288,17 @@ def main():
     try:
         for step in range(total_steps):
             t0 = time.time()
-            sample_text = formatted_samples[step % len(formatted_samples)]
+            # Prepare batch of samples
+            batch_texts = [
+                formatted_samples[(step * batch_size + i) % len(formatted_samples)]
+                for i in range(batch_size)
+            ]
             
-            # Real tokenization
+            # Real batch tokenization with padding
+            tokenizer.padding_side = "right"
             encoded = tokenizer(
-                sample_text,
+                batch_texts,
+                padding=True,
                 truncation=True,
                 max_length=256,
                 return_tensors="pt"
@@ -281,14 +306,17 @@ def main():
 
             input_ids = encoded["input_ids"]
             attention_mask = encoded["attention_mask"]
-            seq_len = input_ids.shape[1]
+            batch_tokens_count = int(attention_mask.sum().item())
 
-            # Real Forward Pass & Loss
+            # Real Forward Pass & Loss (pad tokens masked with -100)
             optimizer.zero_grad()
+            labels = input_ids.clone()
+            labels[attention_mask == 0] = -100
+
             outputs = model(
                 input_ids=input_ids,
                 attention_mask=attention_mask,
-                labels=input_ids
+                labels=labels
             )
             loss = outputs.loss
 
@@ -304,8 +332,8 @@ def main():
             elapsed_step = t1 - t0
             step_times.append(elapsed_step)
             losses.append(loss.item())
-            total_tokens_processed += seq_len
-            tokens_per_sec = seq_len / elapsed_step if elapsed_step > 0 else 0
+            total_tokens_processed += batch_tokens_count
+            tokens_per_sec = batch_tokens_count / elapsed_step if elapsed_step > 0 else 0
 
             # Calculate live ETA
             remaining_steps = total_steps - (step + 1)
