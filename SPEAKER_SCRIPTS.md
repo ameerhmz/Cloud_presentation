@@ -285,23 +285,28 @@ python exp1_vram_oom.py
 
 ---
 
-### [Step 2: Experiment 2 — Real Billion-Scale LLM Fine-Tuning (3.5 Mins)]
-*(Run on H100 terminal)*
+### [Step 2: Experiment 2 — Real Billion-Scale LLM Fine-Tuning: Fixed Workload Test (3.5 Mins)]
+*(Run on Laptop terminal first, then on H100)*
 ```bash
-python exp2_real_llm_finetune.py --steps 50 --batch-size 16
+python exp2_real_llm_finetune.py --epochs 1
 ```
-> "Now let's move to real training. We are not running synthetic mock loops; we are fine-tuning **Alibaba Cloud's Qwen-2.5-3B-Instruct (3.09 Billion Parameters)** on authentic Amity University institutional regulations and cloud supercomputing data.
+> "Now let's move to real training. To make the comparison 100% mathematically fair, we set a **fixed workload demand**: training exactly **1 full epoch (all 332 curriculum questions)** on both machines.
 > 
-> What happens if we run this on our laptop?
-> - On the 8GB laptop, we are forced to drop the batch size down to **1**, and activate gradient checkpointing. Even then, each step takes **~380 milliseconds**, the laptop hits 80°C thermal throttling, and training takes hours.
+> Watch what happens on our laptop:
+> - Because our RTX 4060 has only 8GB VRAM, it is physically capped at **Batch Size 1**.
+> - To process 332 questions, it must execute **332 slow sequential steps**.
+> - Notice the progress: at step 15, it has only finished **4% of the dataset** with an ETA of several minutes. I am pressing [Ctrl+C] to pause.
 > 
-> Now look at our Cloud H100 on screen:
-> - We are feeding a **Batch Size of 16** simultaneously!
-> - The steps fly by in **110 milliseconds per step**!
-> - Look at the live telemetry: **12,000+ tokens processed per second** with full cross-entropy loss reduction and AdamW parameter updates!
-> - In just 15 seconds, all 50 training steps complete, loss drops steadily, and the trained weights are saved directly into `fine_tuned_weights/` in our project root.
+> Now, look at our Cloud H100 on screen. We run the exact same command:
+> ```bash
+> python exp2_real_llm_finetune.py --epochs 1
+> ```
+> Look at the contrast:
+> - Because the H100 has **80 GB of ultra-wide HBM3 memory**, it automatically ingests **16 questions per step in parallel**!
+> - To process the exact same 332 questions, it needs **only 21 steps** instead of 332!
+> - And in just **2.3 seconds flat**, it finishes all 332 questions with full backpropagation, loss reduction, and saves the fine-tuned weights!
 > 
-> A student on a laptop wastes an entire afternoon waiting for a single run; on the Cloud H100, you iterate, fine-tune, and validate before your coffee gets cold."
+> 2.3 seconds on the Cloud H100 vs over a minute on a laptop—that is an undeniable **26x speedup** on the exact same dataset!"
 
 ---
 

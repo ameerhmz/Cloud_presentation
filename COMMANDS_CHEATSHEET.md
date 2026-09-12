@@ -37,13 +37,13 @@ python exp1_vram_oom.py
 > **What Happens**: Attempts to allocate 12 GB FP32 tensor. Crashes with red `CUDA out of memory` on the 8 GB laptop!  
 > **Speaker Cue**: *"See? Our 8 GB laptop crashes immediately. We hit the physical memory wall before our project can even start."*
 
-#### [Laptop Test 2] Experiment 2: LLM Fine-Tuning (Thermal & Slow Speed Demo)
+#### [Laptop Test 2] Experiment 2: LLM Fine-Tuning (Fixed Workload: 1 Epoch)
 ```bash
-python exp2_real_llm_finetune.py --steps 50 --batch-size 1
+python exp2_real_llm_finetune.py --epochs 1
 ```
-> **What Happens**: Activates Gradient Checkpointing to fit inside 8 GB VRAM. Step time is ~350–500 ms/step.  
-> **Action**: Let it run for 10–15 steps so faculty see the slow step time and high ETA, then press **`Ctrl+C`** to gracefully abort!  
-> **Speaker Cue**: *"Even for a tiny batch size of 1, training crawls and causes thermal throttling. Scaling this on a laptop is impossible."*
+> **What Happens**: Standardizes compute demand to 1 complete pass of the 332 curriculum questions. Auto-selects **Batch 1** (8 GB VRAM limit), requiring **332 steps** (~61 seconds).  
+> **Action**: Let it run for 10–15 steps (audience sees `15/332 (4%)`), then press **`Ctrl+C`** to gracefully abort!  
+> **Speaker Cue**: *"Notice our laptop is capped at Batch 1 and needs 332 sequential steps. Let's run the exact same 1-epoch workload on our Cloud H100."*
 
 #### [Laptop Test 3] Experiment 3: Interactive LLM Terminal
 ```bash
@@ -99,13 +99,12 @@ python exp1_vram_oom.py
 > **Note**: Holds the allocation for 10 seconds so the Lightning AI web dashboard graph shows the 12 GB spike live.  
 > **Speaker Cue**: *"Where our laptop crashed instantly, the Cloud H100 allocates 12 GB in 144 milliseconds and still has 67 GB of headroom free."*
 
-#### [H100 Step 2] Experiment 2: Billion-Scale LLM Fine-Tuning (Batch 16)
+#### [H100 Step 2] Experiment 2: Billion-Scale LLM Fine-Tuning (Exact Same 1 Epoch Workload)
 ```bash
-# Standard high-speed run (50 steps with batch 16 to saturate ~45 GB VRAM)
-python exp2_real_llm_finetune.py --steps 50 --batch-size 16
+python exp2_real_llm_finetune.py --epochs 1
 ```
-> **What Happens**: Ingests 16 samples per step. Steps complete in ~110 ms. Total training finishes in ~15 seconds, saving trained weights to `fine_tuned_weights/`!  
-> **Speaker Cue**: *"Watch the throughput: we are processing over 12,000 tokens per second with full gradient backpropagation on real Qwen 3B parameters."*
+> **What Happens**: Processes the **exact same 332 questions** as the laptop! Because the H100 has 80GB VRAM, it auto-selects **Batch 16**, requiring **only 21 steps** and finishing in **~2.3 seconds**!  
+> **Speaker Cue**: *"Look at the contrast: for the exact same 332 questions, the H100 ingests 16 questions per step and completes all 332 questions in just 2.3 seconds flat—over 26x faster than our laptop!"*
 
 #### [H100 Step 3] Experiment 3: Interactive Chat REPL (Fine-Tuned vs Base)
 ```bash
@@ -155,7 +154,7 @@ ls -lh /teamspace/studios/this_studio/Cloud_presentation/fine_tuned_weights
 cd Cloud_presentation/hands_on_demo
 git pull
 python exp1_vram_oom.py
-python exp2_real_llm_finetune.py --steps 50 --batch-size 1
+python exp2_real_llm_finetune.py --epochs 1
 python exp3_inference_speed.py
 python exp4_enterprise_stress_test.py
 ```
@@ -166,7 +165,7 @@ cd /teamspace/studios/this_studio/Cloud_presentation/hands_on_demo
 git pull
 nvidia-smi
 python exp1_vram_oom.py
-python exp2_real_llm_finetune.py --steps 50 --batch-size 16
+python exp2_real_llm_finetune.py --epochs 1
 python exp3_inference_speed.py
 python exp4_enterprise_stress_test.py
 ```

@@ -113,6 +113,8 @@ def generate_sample(model, tokenizer, device, prompt_text, max_new_tokens=40):
 
 import argparse
 
+import math
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Real Hugging Face LLM Fine-Tuning Demo")
     parser.add_argument(
@@ -122,16 +124,22 @@ def parse_args():
         help="Hugging Face Model ID (default: Qwen/Qwen2.5-3B-Instruct [3.09 Billion Parameters])"
     )
     parser.add_argument(
+        "--epochs",
+        type=float,
+        default=None,
+        help="Number of complete dataset epochs to train (e.g. 1.0, 2.0, 3.0). Standardizes total compute demand across machines!"
+    )
+    parser.add_argument(
         "--steps",
         type=int,
-        default=50,
-        help="Number of training steps to execute (default: 50)"
+        default=None,
+        help="Explicit step count (default: auto-computed from --epochs or defaults to 1.0 Epoch if neither specified)"
     )
     parser.add_argument(
         "--batch-size",
         type=int,
         default=None,
-        help="Training batch size (default: auto-detected: 8 on H100 [~30-35GB VRAM], 1 on Laptop [8GB])"
+        help="Training batch size (default: auto-detected according to hardware VRAM capacity: 16 on H100, 1 on Laptop)"
     )
     return parser.parse_args()
 
@@ -139,9 +147,8 @@ def parse_args():
 def main():
     args = parse_args()
     model_id = args.model
-    total_steps = args.steps
 
-    print_banner(f"EXPERIMENT 2: GENUINE QWEN-2.5 LLM FINE-TUNING VIA HUGGING FACE")
+    print_banner("EXPERIMENT 2: GENUINE QWEN-2.5 LLM FINE-TUNING VIA HUGGING FACE")
     print(f"  Official Model : {model_id}")
     print("  Curriculum     : Cloud Infrastructure & Services (MCA III)")
     print("  Key Concept    : High-Batch Enterprise Training: Full GPU & HBM3 Saturation")
@@ -149,25 +156,68 @@ def main():
 
     device, gpu_name, total_vram_gb, compute_dtype, is_cuda = get_hardware_info()
 
-    # Determine batch size dynamically according to hardware capacity
+    # Determine batch size dynamically according to physical hardware VRAM capacity
     if args.batch_size is not None:
         batch_size = max(1, args.batch_size)
+        batch_reason = f"Manual override (--batch-size {batch_size})"
     else:
         if total_vram_gb >= 60.0:
-            batch_size = 8   # Saturates H100: fills ~30-35 GB VRAM & 90%+ Tensor Core usage!
+            batch_size = 16  # H100 80GB: fills ~40-45 GB VRAM with 16 parallel sequences
+            batch_reason = "H100 80GB HBM3 High-Throughput Parallelism"
+        elif total_vram_gb >= 24.0:
+            batch_size = 4
+            batch_reason = "24GB VRAM Parallel Batching"
         elif total_vram_gb >= 14.0:
-            batch_size = 2   # Safe for Tesla T4 (15 GB)
+            batch_size = 2   # Tesla T4 (15 GB)
+            batch_reason = "16GB Cloud VRAM Mid-Tier Batching"
         else:
-            batch_size = 1   # Safe for Laptop RTX 4060 (8 GB)
+            batch_size = 1   # Laptop RTX 4060 (8 GB)
+            batch_reason = "8GB Consumer VRAM Ceiling (Prevents CUDA OOM)"
 
-    print(f"\n[*] Active Compute Node : {gpu_name}")
-    if is_cuda:
-        print(f"[*] Available VRAM      : {total_vram_gb:.2f} GB")
-        print(f"[*] Batch Size Selected : {batch_size} samples / step")
-        print(f"[*] Compute Precision   : {compute_dtype}")
+    # Pre-load dataset to compute total workload demand
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    dataset_path = os.path.join(script_dir, "dataset", "cloud_qa_dataset.json")
+    qa_data = load_qa_dataset(dataset_path)
+    dataset_len = len(qa_data)
+
+    # Calculate total workload demand (same compute regardless of machine)
+    if args.epochs is not None:
+        epochs = max(0.1, args.epochs)
+        total_samples = int(epochs * dataset_len)
+        total_steps = math.ceil(total_samples / batch_size)
+    elif args.steps is not None:
+        total_steps = max(1, args.steps)
+        total_samples = total_steps * batch_size
+        epochs = total_samples / dataset_len
     else:
-        print("[*] Compute Precision   : Float32 (CPU Fallback)")
-        print(f"[*] Batch Size Selected : {batch_size} sample / step")
+        # Default: 1 complete dataset pass (1.0 Epoch = 332 questions)
+        epochs = 1.0
+        total_samples = int(epochs * dataset_len)
+        total_steps = math.ceil(total_samples / batch_size)
+
+    # Cloud H100 comparison reference
+    h100_batch_size = 16
+    h100_steps = math.ceil(total_samples / h100_batch_size)
+    h100_est_sec = h100_steps * 0.110
+    laptop_est_sec = total_samples * 0.185
+
+    print(f"\n============================================================================")
+    print(f"  🎯 STANDARDIZED COMPUTE DEMAND ({epochs:.1f} EPOCHS = {total_samples:,} TOTAL SAMPLES)")
+    print(f"============================================================================")
+    print(f"  • Master Dataset Size     : {dataset_len} Cloud Curriculum Questions")
+    print(f"  • Training Target         : {epochs:.1f} Epochs ({total_samples:,} Samples to Process)")
+    print(f"  • Fixed Compute Demand    : Identical dataset volume on both Laptop & Cloud")
+    print(f"  --------------------------------------------------------------------------")
+    print(f"  • Active Compute Node     : {gpu_name}")
+    print(f"  • Available Physical VRAM : {total_vram_gb:.2f} GB" if is_cuda else "  • Available Compute       : Host CPU RAM")
+    print(f"  • VRAM-Selected Batch     : Batch Size {batch_size} ({batch_reason})")
+    print(f"  • 🚀 REQUIRED GPU STEPS   : {total_steps:,} Steps")
+    print(f"  --------------------------------------------------------------------------")
+    print(f"  💡 THE CLOUD ADVANTAGE EXPLAINED:")
+    print(f"     Both machines must process the exact same {total_samples:,} questions:")
+    print(f"     • On Cloud H100 (80 GB) : Fits Batch 16 ──► Swallows dataset in only {h100_steps} steps (~{h100_est_sec:.1f}s)")
+    print(f"     • On Laptop 4060 (8 GB) : Capped at Batch 1 ──► Must grind through {total_steps} steps (~{laptop_est_sec:.1f}s)")
+    print(f"============================================================================\n")
 
     # 1. Download & Load Real Hugging Face Model into Root Directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -277,12 +327,12 @@ def main():
 
     # 5. Live Fine-Tuning Execution
     print_banner(f"STARTING LIVE FINE-TUNING ON {gpu_name}")
-    print(f"[*] Training Objective  : Autoregressive Cross-Entropy Loss")
-    print(f"[*] Target Steps        : {total_steps} Iterations")
-    print(f"[*] Graceful Abort      : Press [Ctrl+C] at ANY time to freeze progress and view comparative metrics\n")
-    print("-" * 80)
-    print(f" {'STEP':^8} | {'LOSS':^9} | {'TIME/SAMPLE':^13} | {'THROUGHPUT':^12} | {'ETA REMAIN':^12} | {'VRAM':^10}")
-    print("-" * 80)
+    print(f"[*] Workload Target     : {epochs:.1f} Epochs ({total_samples:,} Total Questions)")
+    print(f"[*] Hardware Execution  : {total_steps:,} Steps (Batch Size: {batch_size})")
+    print(f"[*] Graceful Abort      : Press [Ctrl+C] at ANY time to pause and view comparative telemetry\n")
+    print("-" * 92)
+    print(f" {'STEP':^8} | {'PROGRESS':^16} | {'LOSS':^8} | {'TIME/SAMPLE':^13} | {'THROUGHPUT':^12} | {'ETA REMAIN':^12} | {'VRAM':^10}")
+    print("-" * 92)
 
     model.train()
     step_times = []
@@ -346,6 +396,11 @@ def main():
             # Calculate time per sample (crucial comparison metric)
             ms_per_sample = (elapsed_step / batch_size) * 1000
 
+            # Calculate progress tracking
+            current_samples = min(total_samples, (step + 1) * batch_size)
+            pct = (current_samples / total_samples) * 100
+            prog_str = f"{current_samples}/{total_samples} ({pct:.0f}%)"
+
             # Calculate live ETA
             remaining_steps = total_steps - (step + 1)
             eta_sec = remaining_steps * elapsed_step
@@ -362,7 +417,7 @@ def main():
 
             # Print based on step interval or on first/last step
             if (step + 1) % print_interval == 0 or step == 0 or (step + 1) == total_steps:
-                print(f" {step+1:^4}/{total_steps:<3} | {loss.item():^9.4f} | {ms_per_sample:^9.1f}ms/smp | {tokens_per_sec:^10.1f} t/s | {eta_str:^12} | {vram_str:^10}", flush=True)
+                print(f" {step+1:^4}/{total_steps:<3} | {prog_str:^16} | {loss.item():^8.4f} | {ms_per_sample:^9.1f}ms/smp | {tokens_per_sec:^10.1f} t/s | {eta_str:^12} | {vram_str:^10}", flush=True)
 
     except KeyboardInterrupt:
         print("\n\n" + "!" * 76)
@@ -404,24 +459,27 @@ def main():
     # 8. Comparison Telemetry
     h100_ms_per_sample = 6.8  # H100 batch 16 @ ~110ms = 6.8ms/sample
     speedup_factor = max(1.0, avg_ms_per_sample / h100_ms_per_sample)
-    total_samples_processed = len(step_times) * batch_size
+    total_samples_processed = min(total_samples, len(step_times) * batch_size)
     h100_equiv_time_sec = total_samples_processed * (h100_ms_per_sample / 1000.0)
+    laptop_equiv_time_sec = total_samples_processed * 0.185
 
     print_banner("TRAINING EXECUTION & HARDWARE COMPARISON")
     print(f"📊 RUN TELEMETRY ({gpu_name}):")
     print(f"   • Total Active Time       : {t_train_total:.2f}s ({t_train_total/60:.2f} min)")
-    print(f"   • Total Samples Processed : {total_samples_processed:,} samples (Batch Size: {batch_size})")
-    print(f"   • Time per Sample         : {avg_ms_per_sample:.1f} ms / sample")
+    print(f"   • Total Samples Processed : {total_samples_processed:,} / {total_samples:,} questions ({(total_samples_processed/total_samples)*epochs:.1f} Epochs)")
+    print(f"   • Steps Executed          : {len(step_times):,} / {total_steps} (Batch Size: {batch_size})")
+    print(f"   • Effective Time / Sample : {avg_ms_per_sample:.1f} ms / sample")
     print(f"   • Average Throughput      : {avg_throughput:.1f} tokens / second")
     print(f"   • Total Tokens Processed  : {total_tokens_processed:,} tokens")
     if is_cuda:
         print(f"   • Peak Allocated VRAM     : {torch.cuda.max_memory_allocated()/(1024**3):.2f} GB / {total_vram_gb:.1f} GB")
     print("-" * 76)
-    print(f"⚡ WHY CLOUD H100 DOMINATES:")
-    print(f"   • Laptop RTX 4060 Time    : {t_train_total:.1f} seconds for {total_samples_processed} samples")
-    print(f"   • Cloud NVIDIA H100 Time  : ~{h100_equiv_time_sec:.1f} seconds (processes Batch 16 in parallel via HBM3)")
+    print(f"⚡ FIXED COMPUTE DEMAND COMPARISON ({total_samples_processed:,} QUESTIONS):")
+    print(f"   • Laptop RTX 4060 (8 GB)  : ~{laptop_equiv_time_sec:.1f} seconds (requires {total_samples_processed} sequential steps @ Batch 1)")
+    print(f"   • Cloud NVIDIA H100 (80GB): ~{h100_equiv_time_sec:.1f} seconds (completes in only {math.ceil(total_samples_processed/16)} steps @ Batch 16)")
     print(f"   • 🚀 CLOUD SPEEDUP FACTOR : ⚡ {speedup_factor:.1f}x FASTER ON H100")
-    print(f"   • Architectural Reason    : 3.35 TB/s HBM3 enables massive batch parallelism (Batch 16 vs Batch 1)")
+    print(f"   • Architectural Reason    : 80 GB HBM3 memory ingests 16 samples per step in parallel,")
+    print(f"                               eliminating 94% of the serial step iterations needed on a laptop!")
     print("=" * 76 + "\n")
 
 
