@@ -2,7 +2,7 @@
 """
 ===============================================================================
 HARDWARE BENCHMARK VISUALIZATION GENERATOR
-Course: Cloud Infrastructure and Services - MCA III
+Course: CSIT805: Cloud Infrastructure and Services
 Topic: RTX 3050 Mobile vs. RTX 4060 Mobile vs. Cloud NVIDIA H100 SXM5
 Presenter: Ameer Hamza (Group 1)
 ===============================================================================
@@ -97,7 +97,7 @@ def generate_hardware_comparison_chart(output_path):
                 label += "\n(19.7x Concurrency)"
             ax4.text(bar.get_x() + bar.get_width()/2, y + 40, label, ha='center', va='bottom', fontsize=10, fontweight='bold', color='#ffffff')
 
-    plt.suptitle("HARDWARE BENCHMARK MATRIX: ENTRY LAPTOP vs. MID LAPTOP vs. CLOUD H100\nMCA III Cloud Infrastructure & Services • Empirical Lab Results", 
+    plt.suptitle("HARDWARE BENCHMARK MATRIX: ENTRY LAPTOP vs. MID LAPTOP vs. CLOUD H100\nCSIT805: Cloud Infrastructure & Services • Empirical Lab Results", 
                  fontsize=16, fontweight='bold', color='#38bdf8', y=0.98)
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
 

@@ -2,7 +2,7 @@
 """
 ===============================================================================
 EXPERIMENT 4: Enterprise Multi-User Cloud Stress Test (16 Concurrent Users)
-Course: Cloud Infrastructure and Services - MCA III
+Course: CSIT805: Cloud Infrastructure and Services
 Topic: High-Concurrency Enterprise Serving: Why Cloud H100 Dominates Production AI
 Presenter: Ameer Hamza (Group 1)
 ===============================================================================

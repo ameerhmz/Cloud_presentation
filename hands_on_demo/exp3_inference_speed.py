@@ -2,7 +2,7 @@
 """
 ===============================================================================
 EXPERIMENT 3: Interactive Cloud LLM Terminal & Real-Time Serving Benchmark
-Course: Cloud Infrastructure and Services - MCA III
+Course: CSIT805: Cloud Infrastructure and Services
 Topic: Serving AI at Scale: Interactive Cloud Inference Demonstration
 Presenter: Ameer Hamza (Group 1)
 ===============================================================================

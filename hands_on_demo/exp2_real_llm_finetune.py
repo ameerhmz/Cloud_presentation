@@ -2,7 +2,7 @@
 """
 ===============================================================================
 EXPERIMENT 2: Genuine Qwen-2.5 LLM Fine-Tuning with Hugging Face Transformers
-Course: Cloud Infrastructure and Services - MCA III
+Course: CSIT805: Cloud Infrastructure and Services
 Topic: Cloud Acceleration: Why H100 Cloud Supercomputers Outperform Local GPUs
 Presenter: Ameer Hamza (Group 1)
 ===============================================================================
@@ -150,7 +150,7 @@ def main():
 
     print_banner("EXPERIMENT 2: GENUINE QWEN-2.5 LLM FINE-TUNING VIA HUGGING FACE")
     print(f"  Official Model : {model_id}")
-    print("  Curriculum     : Cloud Infrastructure & Services (MCA III)")
+    print("  Curriculum     : CSIT805: Cloud Infrastructure & Services")
     print("  Key Concept    : High-Batch Enterprise Training: Full GPU & HBM3 Saturation")
     print("=" * 76)
 

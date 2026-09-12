@@ -1,5 +1,5 @@
 # 📋 MASTER COPY-PASTE COMMAND CHEAT SHEET
-### Course: Cloud Infrastructure and Services (MCA III)
+### Course: CSIT805: Cloud Infrastructure and Services
 ### Topic: Leveraging NVIDIA H100 on Lightning AI for High-Performance Cloud Computing
 ### Presenter: Ameer Hamza (Group 1)
 

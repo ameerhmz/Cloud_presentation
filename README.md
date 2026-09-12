@@ -1,4 +1,4 @@
-# 🚀 MCA III Cloud Infrastructure & Services Presentation Package
+# 🚀 CSIT805: Cloud Infrastructure and Services — Presentation Package
 
 **Topic**: Leveraging NVIDIA H100 on Lightning AI for High-Performance Cloud Computing  
 **Date of Presentation**: 14/09/2026  
