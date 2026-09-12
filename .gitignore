@@ -12,8 +12,13 @@ __pycache__/
 *.msgpack
 model_cache/
 qwen_model/
+model_weights/
+fine_tuned_weights/
 hands_on_demo/model_cache/
 hands_on_demo/qwen_model/
+hands_on_demo/model_weights/
+hands_on_demo/fine_tuned_weights/
+
 
 # Environments & IDEs
 .env
