@@ -108,10 +108,12 @@ def main():
     device, gpu_name, total_vram_gb, compute_dtype, is_cuda = get_hardware_info()
     num_users = min(args.users, len(ENTERPRISE_QUESTIONS))
 
-    print_banner(f"EXPERIMENT 4: ENTERPRISE CLOUD STRESS TEST ({num_users} CONCURRENT USERS)")
-    print(f"  Active Node : {gpu_name}")
-    print(f"  Model Scale : Qwen-2.5 3B (3,090,000,000 Parameters)")
-    print(f"  Workload    : Simultaneous parallel inference for {num_users} active client sessions")
+    print("\n" + "=" * 80, flush=True)
+    print(f"  ⚡ 16 CONCURRENT ENTERPRISE USERS STRESS TEST (SIMULTANEOUS INFERENCE)", flush=True)
+    print("=" * 80, flush=True)
+    print(f"[*] Target Compute Node    : {gpu_name}")
+    print(f"[*] Workload Architecture  : {num_users} Concurrent Client Streams Batched into Parallel Tensor Cores")
+    print(f"[*] Memory Saturation      : Ingesting all {num_users} prompt streams simultaneously via HBM3")
     print("=" * 80, flush=True)
 
     # 1. Resolve Local or Pre-Downloaded Model

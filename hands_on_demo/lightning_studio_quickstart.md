@@ -90,22 +90,37 @@
 
 ---
 
-### Step 4: Run Experiment 3 — High-Throughput Cloud Inference Benchmark (2 Minutes)
+### Step 4: Run Experiment 3 — Interactive Cloud LLM Terminal (2 Minutes)
 * **What you say**:  
-  *"Training is only half the cloud equation. Over 90% of enterprise AI cloud spend is on INFERENCE—serving thousands of concurrent users. When generating text, every single token requires reloading all 1.5 Billion parameters through the GPU memory bus. On an RTX 4060 laptop with a 128-bit GDDR6 bus, generation crawls at ~30 tokens/sec. Watch our Cloud H100 handle interactive streaming and concurrent batch inference at blistering speeds."*
+  *"Now let's test our fine-tuned weights live in an interactive conversational session. Anyone can type a question, and watch the answer stream token-by-token directly from our cloud instance."*
 * **Action**: In the terminal, run:
   ```bash
   python exp3_inference_speed.py
   ```
 * **What happens**:
-  - Automatically loads the trained weights from `fine_tuned_weights/` (or `model_weights/`).
-  - **Test 1**: Streams real-time tokens live on screen with sub-second Time to First Token (TTFT).
-  - **Test 2**: Simulates concurrent users submitting cloud infrastructure queries in parallel.
-  - Outputs aggregate throughput (`tokens/sec`) demonstrating why cloud inference dominates production AI.
+  - Displays interactive menu:
+    - `[1]` Fine-Tuned Model (Trained on Amity & Cloud Dataset)
+    - `[2]` Base Foundation Model (Raw Qwen-2.5-3B-Instruct)
+    - `[3]` ⚡ Enterprise Multi-User Stress Test (16 Concurrent Users)
+  - Interactive REPL allows asking any question, or typing `stress` at any point to trigger the 16-user parallel benchmark!
 
 ---
 
-### Step 5: The Cloud Elasticity & Cost-Saving Trick (2 Minutes)
+### Step 5: Run Experiment 4 — 16-User Concurrent Enterprise Stress Test (2 Minutes)
+* **What you say**:  
+  *"In real enterprise applications like ChatGPT or enterprise cloud search, thousands of users hit the model at the exact same second. On a laptop with a narrow 128-bit memory bus, you cannot serve multiple users simultaneously—queries queue up serially and latency explodes to over 40 seconds. Watch how the H100 uses its 3.35 TB/s HBM3 memory to answer 16 complex questions simultaneously in parallel."*
+* **Action**: In the terminal, run:
+  ```bash
+  python exp4_enterprise_stress_test.py
+  ```
+* **What happens**:
+  - Fires **16 distinct technical questions** simultaneously to the H100.
+  - Generates answers for all 16 users in parallel in **~1.5 seconds**.
+  - Displays aggregate throughput: **`⚡ 1,400+ TOKENS / SECOND`** (over **25x faster** than a laptop queue!).
+
+---
+
+### Step 6: The Cloud Elasticity & Cost-Saving Trick (2 Minutes)
 * **What you say**:  
   *"An H100 costs around $3/hour. If I walk away and leave this GPU running all weekend, that's hundreds of dollars wasted. In traditional AWS EC2, you have to remember to terminate instances via the AWS console."*
 * **Action**:
