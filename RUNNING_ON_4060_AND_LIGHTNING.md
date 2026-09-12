@@ -43,19 +43,23 @@ cd hands_on_demo
    ```bash
    python exp1_vram_oom.py
    ```
-   * **What happens live**: It detects `RTX 4060 (8.0 GB VRAM)`. It attempts to allocate 12 GB and **CRASHES** with:
+   * **What happens**: It detects `RTX 4060 (8.0 GB VRAM)`. It attempts to allocate 12 GB and **CRASHES** with:
      `RuntimeError: CUDA out of memory. Tried to allocate 12.00 GiB on GPU with 8.00 GiB total capacity!`
    * **Your line to faculty**: *"See? Our 8 GB laptop crashes immediately. The project cannot even start locally."*
 
-2. **Run Experiment 2 (The Qwen-2.5-3B 4-Bit QLoRA Bottleneck)**:
+2. **Run Experiment 2 (Real Qwen-2.5 3B Fine-Tuning)**:
    ```bash
-   python exp2_real_llm_finetune.py
+   python exp2_real_llm_finetune.py --steps 500
    ```
-   * **What happens live**: It starts the full 500-step training loop. Step 1, 2, and 3 run:  
-     `Step [003/500] |█-----------------------| Step: 6840ms | Loss: 4.821 | ETA: 56.8 min remaining`
-   * **Your line to faculty**: *"Look at the live ETA on our laptop: 56.8 minutes remaining! We obviously cannot make you wait an hour during a 45-minute presentation. I am pressing Ctrl+C to abort."*
-   * **Action**: Press **`Ctrl+C`**. The script catches it cleanly without crashing and prints the graceful abort summary!
-   * **Next move**: *"Now let's switch to our Cloud H100 to run the exact same 500 steps!"*
+   * **What happens**: Downloads the real 3B model into root `model_weights/` (if not already downloaded). Activates the dynamic VRAM guard (gradient checkpointing) so it runs safely inside 8 GB. Shows live token throughput and remaining ETA.
+   * **Your line to faculty**: *"Look at the live ETA on our laptop: ~2.5 minutes for just 500 steps, and training a full dataset would take hours while thermal throttling at 80°C. I am pressing Ctrl+C to abort."*
+   * **Action**: Press **`Ctrl+C`** to abort gracefully.
+
+3. **Run Experiment 3 (Interactive Cloud LLM Terminal)**:
+   ```bash
+   python exp3_inference_speed.py
+   ```
+   * **What happens**: Loads the base 3B weights from `model_weights/` instantly. Opens an interactive prompt `👉 Enter your question: ` where anyone can ask a real question and watch it stream live with tokens/sec telemetry!
 
 ---
 
@@ -73,8 +77,8 @@ In the Lightning Studio bottom panel, click **Terminal**:
 ```bash
 git clone https://github.com/ameerhmz/Cloud_presentation.git
 cd Cloud_presentation/hands_on_demo
+pip install transformers accelerate huggingface_hub
 ```
-*(Lightning AI already has PyTorch, CUDA 12, and Hugging Face installed. ZERO manual installation needed!)*.
 
 ### Step 3: Run the Demos on H100
 
@@ -84,24 +88,28 @@ cd Cloud_presentation/hands_on_demo
    ```
    *(Show the audience: `NVIDIA H100 80GB HBM3` with 81,559 MiB VRAM!)*
 
-2. **Run Experiment 1 on H100**:
+2. **Run Experiment 1 on H100 (The OOM Test)**:
    ```bash
-   python3 exp1_vram_oom.py
+   python exp1_vram_oom.py
    ```
    * **What happens**: Allocates the 12 GB in **0.04 seconds**!  
      Prints: `[✔] Allocated 12.0 GB on NVIDIA H100 with 68 GB still free!`
 
-3. **Run Experiment 2 on H100 (Qwen-2.5-3B Fine-Tuning)**:
+3. **Run Experiment 2 on H100 (Real Qwen-2.5 3B Fine-Tuning)**:
    ```bash
-   python3 exp2_real_llm_finetune.py
+   python exp2_real_llm_finetune.py --steps 500
    ```
-   * **What happens**: The steps fly by at **~148 ms** per step!  
-     The entire 500 steps finish in **1 Minute 14 Seconds** (~46.2x faster!).  
-     Outputs prompt adaptation before/after and the **Qwen-2.5 3B Live Comparison Card**.
+   * **What happens**: The steps fly by in milliseconds! Completes all 500 steps in seconds with full backpropagation, loss reduction, and saves fine-tuned weights to `fine_tuned_weights/` in the project root.
 
-4. **Show Cloud Cost Optimization**:
+4. **Run Experiment 3 on H100 (Interactive LLM Terminal)**:
+   ```bash
+   python exp3_inference_speed.py
+   ```
+   * **What happens**: Reuses `model_weights/` without re-downloading! Streams answers at blazing speeds (~200+ tokens/sec) thanks to 3.35 TB/s HBM3 memory bandwidth.
+
+5. **Show Cloud Cost Optimization**:
    * Switch the hardware selector to **Free CPU** or click **Pause Studio**.
-   * Show that all files are preserved on `/teamspace/studios`, but GPU billing stops immediately.
+   * Show that all files (`model_weights/`, `fine_tuned_weights/`, datasets) are permanently preserved on cloud storage, but GPU billing drops to exactly $0.00.
 
 ---
 

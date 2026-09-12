@@ -82,21 +82,6 @@ def get_hardware_info():
     return device, gpu_name, total_vram_gb, dtype, is_cuda
 
 
-def find_model_source(requested_model):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_root = os.path.dirname(script_dir) if os.path.basename(script_dir) == "hands_on_demo" else script_dir
-
-    model_weights_dir = os.path.join(project_root, "model_weights")
-
-    # Load from downloaded model_weights directory in root
-    if os.path.exists(model_weights_dir) and (
-        os.path.exists(os.path.join(model_weights_dir, "config.json")) or 
-        any(f.endswith(".safetensors") for f in os.listdir(model_weights_dir) if not f.startswith("."))
-    ):
-        return model_weights_dir, f"Downloaded Base Weights ({os.path.basename(model_weights_dir)}/)"
-    else:
-        return requested_model, f"Hugging Face Hub ({requested_model})"
-
 
 def stream_answer(model, tokenizer, device, prompt_text, max_new_tokens, is_cuda):
     formatted = f"<|im_start|>user\n{prompt_text}<|im_end|>\n<|im_start|>assistant\n"
@@ -136,17 +121,41 @@ def main():
     print(f"  Hardware    : {gpu_name}")
     print("=" * 76, flush=True)
 
-    # 1. Load Model
-    load_source, source_desc = find_model_source(args.model)
-    print(f"\n[*] 📦 Loading Model from: {source_desc}", flush=True)
-    t0_load = time.time()
+    # 1. Load Model (Directly from or to project root: model_weights/)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir) if os.path.basename(script_dir) == "hands_on_demo" else script_dir
+    model_weights_dir = os.path.join(project_root, "model_weights")
+    os.makedirs(model_weights_dir, exist_ok=True)
 
-    tokenizer = AutoTokenizer.from_pretrained(load_source, trust_remote_code=True)
+    has_local_weights = os.path.exists(os.path.join(model_weights_dir, "config.json")) or any(
+        f.endswith(".safetensors") for f in os.listdir(model_weights_dir) if not f.startswith(".")
+    )
+
+    if has_local_weights:
+        load_source = model_weights_dir
+        print(f"\n[*] 📦 Loading Pre-Downloaded Base Model from: {model_weights_dir}", flush=True)
+    else:
+        print(f"\n[*] 📥 Downloading Base Model Weights directly to: {model_weights_dir}", flush=True)
+        try:
+            from huggingface_hub import snapshot_download
+            snapshot_download(
+                repo_id=args.model,
+                local_dir=model_weights_dir,
+                local_dir_use_symlinks=False
+            )
+            load_source = model_weights_dir
+        except Exception as e:
+            print(f"    [Notice] Direct snapshot failed ({e}), loading directly from hub...", flush=True)
+            load_source = args.model
+
+    t0_load = time.time()
+    tokenizer = AutoTokenizer.from_pretrained(load_source, cache_dir=model_weights_dir, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
     model = AutoModelForCausalLM.from_pretrained(
         load_source,
+        cache_dir=model_weights_dir if load_source == args.model else None,
         torch_dtype=compute_dtype if is_cuda else torch.float32,
         low_cpu_mem_usage=True,
         trust_remote_code=True

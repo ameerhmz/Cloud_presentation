@@ -177,6 +177,12 @@ def main():
         trust_remote_code=True
     )
     model.to(device)
+    # VRAM Guard for Consumer GPUs (RTX 4060 8GB): Enables gradient checkpointing to fit 3B safely
+    if is_cuda and total_vram_gb < 12.0:
+        if hasattr(model, "gradient_checkpointing_enable"):
+            model.gradient_checkpointing_enable()
+            print("      • [VRAM Guard] Activated gradient checkpointing for 8 GB consumer GPU!")
+
     t_download_done = time.time()
     print(f"      ✅ Model loaded successfully in {t_download_done - t_download_start:.2f}s!")
 
