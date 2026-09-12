@@ -48,8 +48,8 @@ def parse_args():
     parser.add_argument(
         "--model",
         type=str,
-        default="Qwen/Qwen2.5-1.5B-Instruct",
-        help="Model ID or local weights path (default: Qwen/Qwen2.5-1.5B-Instruct)"
+        default="Qwen/Qwen2.5-3B-Instruct",
+        help="Model ID or local weights path (default: Qwen/Qwen2.5-3B-Instruct [3.09 Billion Parameters])"
     )
     parser.add_argument(
         "--max-new-tokens",
@@ -86,16 +86,17 @@ def find_model_source(requested_model):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(script_dir) if os.path.basename(script_dir) == "hands_on_demo" else script_dir
 
-    fine_tuned_dir = os.path.join(project_root, "fine_tuned_weights")
     model_weights_dir = os.path.join(project_root, "model_weights")
 
-    # Priority: Fine-tuned weights > Local root weights > Requested model ID
-    if os.path.exists(fine_tuned_dir) and os.path.exists(os.path.join(fine_tuned_dir, "config.json")):
-        return fine_tuned_dir, "Custom Fine-Tuned Model (from Exp 2)"
-    elif os.path.exists(model_weights_dir) and os.path.exists(os.path.join(model_weights_dir, "config.json")):
-        return model_weights_dir, "Local Pre-Trained Weights (Root Directory)"
+    # Explicitly load only the downloaded base model from model_weights
+    if os.path.exists(model_weights_dir) and (
+        os.path.exists(os.path.join(model_weights_dir, "config.json")) or 
+        any(f.endswith(".safetensors") for f in os.listdir(model_weights_dir) if not f.startswith("."))
+    ):
+        return model_weights_dir, f"Downloaded Base Model Weights ({model_weights_dir})"
     else:
         return requested_model, f"Hugging Face Hub ({requested_model})"
+
 
 
 def main():

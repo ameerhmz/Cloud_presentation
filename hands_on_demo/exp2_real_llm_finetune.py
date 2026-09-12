@@ -110,8 +110,8 @@ def parse_args():
     parser.add_argument(
         "--model",
         type=str,
-        default="Qwen/Qwen2.5-1.5B-Instruct",
-        help="Hugging Face Model ID (default: Qwen/Qwen2.5-1.5B-Instruct [1.54 Billion Parameters])"
+        default="Qwen/Qwen2.5-3B-Instruct",
+        help="Hugging Face Model ID (default: Qwen/Qwen2.5-3B-Instruct [3.09 Billion Parameters])"
     )
     parser.add_argument(
         "--steps",
