@@ -219,15 +219,18 @@ def main():
     print(f"[*] Training Objective  : Autoregressive Cross-Entropy Loss")
     print(f"[*] Target Steps        : {total_steps} Iterations")
     print(f"[*] Graceful Abort      : Press [Ctrl+C] at ANY time to freeze progress and view comparative metrics\n")
-    print("-" * 76)
-    print(f" {'STEP':^6} | {'LOSS':^9} | {'STEP TIME':^11} | {'THROUGHPUT':^12} | {'ALLOCATED VRAM':^15}")
-    print("-" * 76)
+    print("-" * 80)
+    print(f" {'STEP':^8} | {'LOSS':^9} | {'STEP TIME':^11} | {'THROUGHPUT':^12} | {'ETA REMAIN':^12} | {'VRAM':^10}")
+    print("-" * 80)
 
     model.train()
     step_times = []
     losses = []
     total_tokens_processed = 0
     t_train_start = time.time()
+
+    # Determine display frequency based on step count
+    print_interval = 10 if total_steps >= 200 else (5 if total_steps >= 100 else 2)
 
     try:
         for step in range(total_steps):
@@ -270,18 +273,23 @@ def main():
             total_tokens_processed += seq_len
             tokens_per_sec = seq_len / elapsed_step if elapsed_step > 0 else 0
 
+            # Calculate live ETA
+            remaining_steps = total_steps - (step + 1)
+            eta_sec = remaining_steps * elapsed_step
+            if eta_sec >= 60:
+                eta_str = f"{eta_sec/60:.1f} min"
+            else:
+                eta_str = f"{eta_sec:.1f}s"
+
             if is_cuda:
                 vram_used = torch.cuda.memory_allocated() / (1024**3)
                 vram_str = f"{vram_used:.2f} GB"
             else:
                 vram_str = "CPU RAM"
 
-            # Print every 2 steps for clear live visualization
-            if (step + 1) % 2 == 0 or step == 0:
-                print(f" {step+1:^6} | {loss.item():^9.4f} | {elapsed_step*1000:^9.1f}ms | {tokens_per_sec:^10.1f} t/s | {vram_str:^15}", flush=True)
-
-            # Short sleep to make live progress visible during presentation
-            time.sleep(0.05)
+            # Print based on step interval or on first/last step
+            if (step + 1) % print_interval == 0 or step == 0 or (step + 1) == total_steps:
+                print(f" {step+1:^4}/{total_steps:<3} | {loss.item():^9.4f} | {elapsed_step*1000:^9.1f}ms | {tokens_per_sec:^10.1f} t/s | {eta_str:^12} | {vram_str:^10}", flush=True)
 
     except KeyboardInterrupt:
         print("\n\n" + "!" * 76)
