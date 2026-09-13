@@ -8,8 +8,34 @@ Presenter: Ameer Hamza (Group 1)
 ===============================================================================
 """
 
+import os
 import sys
 import time
+import warnings
+import contextlib
+
+# Suppress Python warnings (including CC incompatibility UserWarnings)
+warnings.filterwarnings("ignore")
+os.environ["PYTHONWARNINGS"] = "ignore"
+
+@contextlib.contextmanager
+def suppress_c_stderr():
+    """Temporarily redirect C-level stderr (fd 2) to silence C++ allocator warnings."""
+    try:
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        stderr_fd = 2
+        saved_stderr = os.dup(stderr_fd)
+        os.dup2(devnull, stderr_fd)
+        os.close(devnull)
+        yield
+    except Exception:
+        yield
+    finally:
+        try:
+            os.dup2(saved_stderr, stderr_fd)
+            os.close(saved_stderr)
+        except Exception:
+            pass
 
 try:
     import torch
@@ -61,8 +87,9 @@ def main():
     try:
         start_time = time.time()
         # Allocate and physically touch memory pages so the hardware graph reflects full 12 GB
-        tensor = torch.zeros((rows, cols), dtype=torch.float32, device="cuda")
-        torch.cuda.synchronize()
+        with suppress_c_stderr():
+            tensor = torch.zeros((rows, cols), dtype=torch.float32, device="cuda")
+            torch.cuda.synchronize()
         alloc_time = time.time() - start_time
         allocated = torch.cuda.memory_allocated(0) / (1024 ** 3)
         free_vram = total_vram - allocated
