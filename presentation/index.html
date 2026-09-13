@@ -2013,82 +2013,82 @@
       {
         speaker: "Ameer Hamza (Host)",
         time: "00:00 - 04:00 (4.0 min)",
-        speech: `Respected faculty evaluators, professors, and fellow classmates, good morning. Group 1 presents our study: <strong>Leveraging NVIDIA H100 on Lightning AI for High-Performance Cloud Computing</strong>.<br><br>Between 2012 and 2026, AI compute demand expanded by more than <strong>100-million-fold</strong>. Dennard scaling and Moore's Law on CPUs have ended. Training modern 70B models on server CPUs would take centuries. The answer is specialized silicon: the <strong>NVIDIA Hopper GH100 microarchitecture</strong> on <strong>Lightning AI</strong> cloud studios.`
+        speech: `Good morning, respected professors and fellow classmates. Group 1 presents our study: <strong>Leveraging NVIDIA H100 on Lightning AI for High-Performance Cloud Computing</strong>.<br><br>Between 2012 and 2026, AI computing demand grew by more than <strong>100 million times</strong>. CPUs have hit a hard physical wall—they generate too much heat if pushed any faster. Training a 70B model on CPUs would take decades. Modern AI requires specialized chips: the <strong>NVIDIA Hopper H100 GPU</strong> running on <strong>Lightning AI</strong> cloud studios.`
       },
       {
         speaker: "Ameer Hamza (Host)",
         time: "00:00 - 04:00 (4.0 min)",
-        speech: `Our presentation is structured into 5 engineering layers:<br><br>1. <strong>Suhail Alam</strong>: Why CPUs fail at linear algebra and on-premises physical data center barriers.<br>2. <strong>Harsh Mishra</strong>: Hopper GH100 silicon, 4th-Gen Tensor Cores, FP8 Transformer Engine, and 3.35 TB/s HBM3.<br>3. <strong>Mirza Saad Beg</strong>: Cloud virtualization, dynamic elasticity, and FSDP distributed scaling.<br>4. <strong>Live Hardware Showdown</strong>: Our live H100 benchmarks across 4 empirical tests.<br>5. <strong>Harshit Tandon</strong>: Hyperscaler quota bottlenecks and enterprise TCO economics.<br><br><em>Handoff:</em> "To examine the arithmetic breakdown inside CPUs, I hand the floor to Suhail Alam."`
+        speech: `Our presentation is divided into 5 clear parts:<br><br>1. <strong>Suhail Alam</strong>: Why CPUs cannot handle AI math, and why buying physical supercomputers is practically impossible.<br>2. <strong>Harsh Mishra</strong>: The H100 chip, 4th-Gen Tensor Cores, the FP8 Transformer Engine, and 3.35 TB/s HBM3 memory.<br>3. <strong>Mirza Saad Beg</strong>: Cloud virtualization, one-click hardware switching, and FSDP distributed scaling.<br>4. <strong>Live Hardware Showdown</strong>: Our live H100 benchmarks across 4 empirical tests.<br>5. <strong>Harshit Tandon</strong>: Cloud pricing hurdles and enterprise cost optimization.<br><br><em>Handoff:</em> "To start with why CPUs struggle with AI math, I hand over to Suhail Alam."`
       },
       {
         speaker: "Suhail Alam (Part 1)",
         time: "04:00 - 07:00 (3.0 min)",
-        speech: `Thank you, Ameer. <strong>Why can't server CPUs train deep neural networks?</strong><br><br>A CPU is engineered for <strong>low-latency sequential execution</strong> (16 to 64 large cores, branch prediction, deep if-else pipelines). Deep learning is not branching logic—it is <strong>dense linear algebra</strong> (GEMMs) requiring trillions of simultaneous matrix operations.<br><br>A CPU operates like a fast passenger train; a GPU is a <strong>10,000-lane highway</strong> processing millions of matrix values simultaneously across silicon every clock cycle.`
+        speech: `Thank you, Ameer. <strong>Why can't server CPUs train modern AI?</strong><br><br>A CPU is built for <strong>speed on sequential tasks</strong> (16 to 64 fast cores, deep if-else pipelines). Deep learning is not complex logic; it is <strong>huge amounts of matrix math</strong> with trillions of simple calculations happening all at once.<br><br>Think of a CPU like a fast sports car carrying a few passengers quickly; a GPU is a <strong>10,000-lane highway</strong> moving millions of data points forward in parallel every single clock cycle.`
       },
       {
         speaker: "Suhail Alam (Part 1)",
         time: "04:00 - 07:00 (3.0 min)",
-        speech: `Why can't universities or startups purchase an on-premises H100 server?<br><br>1. <strong>CapEx Barrier</strong>: A single 8-GPU DGX H100 chassis costs over <strong>$300,000 (₹2.5 Crore)</strong>.<br>2. <strong>Power Grid Limits</strong>: Draws <strong>10.2 Kilowatts</strong> of continuous power—unsupported by standard academic wiring.<br>3. <strong>Thermal Limits</strong>: 700W per GPU demands high-pressure chilled-water liquid cooling.<br><br>The cloud converts this impossible CapEx into an on-demand utility: <strong>~$3.00/hour</strong>. Harsh Mishra will now unpack the Hopper silicon.`
+        speech: `Why can't universities or startups just buy an H100 server?<br><br>1. <strong>Purchase Cost</strong>: A single 8-GPU H100 server costs over <strong>$300,000 (₹2.5 Crore)</strong>.<br>2. <strong>Power Draw</strong>: Pulls <strong>10.2 Kilowatts</strong> of continuous power—too much for standard college wiring.<br>3. <strong>Heat & Cooling</strong>: 700W per GPU requires factory-grade liquid cooling.<br><br>The cloud turns this multi-crore barrier into an on-demand utility: <strong>~$3.00/hour</strong>. Harsh Mishra will now unpack the H100 chip.`
       },
       {
         speaker: "Harsh Mishra (Part 2)",
         time: "07:00 - 15:30 (8.5 min)",
-        speech: `Thank you, Suhail. Respected faculty, let us examine the <strong>NVIDIA Hopper GH100 microarchitecture</strong>.<br><br>Manufactured on a custom <strong>TSMC 4N 4nm node</strong>, it packs <strong>80 Billion transistors</strong> onto an <strong>814 mm² monolithic die</strong> at the physical reticle limit.<br><br>The SXM5 package features: <strong>132 SMs, 16,896 CUDA cores, 528 4th-Gen Tensor Cores</strong> delivering 3,000 TFLOPS of FP8 compute, a 50MB L2 cache, and Distributed Shared Memory.`
+        speech: `Thank you, Suhail. Respected faculty, let's examine the <strong>NVIDIA Hopper H100</strong>.<br><br>Built on a custom <strong>4-nanometer TSMC process</strong>, it packs <strong>80 Billion transistors</strong> onto an <strong>814 mm² single silicon die</strong> at the physical limit of chip manufacturing.<br><br>The SXM5 version features: <strong>132 SMs, 16,896 CUDA cores, 528 4th-Gen Tensor Cores</strong> delivering 3,000 TFLOPS of compute, a 50MB L2 cache, and Distributed Shared Memory.`
       },
       {
         speaker: "Harsh Mishra (Part 2)",
         time: "07:00 - 15:30 (8.5 min)",
-        speech: `Hopper's first major innovation is the <strong>FP8 Transformer Engine</strong>.<br><br>Halving precision from 16-bit to 8-bit cuts memory traffic by 50% and doubles Tensor Core density. To prevent mathematical underflow, the engine switches dynamically at runtime:<br><br>• <strong>E4M3 (1-4-3)</strong>: High precision for forward activation passes.<br>• <strong>E5M2 (1-5-2)</strong>: Wide dynamic range for backward gradient passes.<br><br>Continuously scaling tensors on the fly yields <strong>2x to 3x higher throughput with zero loss in convergence</strong>.`
+        speech: `The first major breakthrough is the <strong>FP8 Transformer Engine</strong>.<br><br>Cutting number size from 16-bit to 8-bit cuts memory traffic in half and doubles Tensor Core calculation speed. To avoid losing accuracy, the engine switches automatically in hardware:<br><br>• <strong>E4M3 (1-4-3)</strong>: High precision for forward activation passes.<br>• <strong>E5M2 (1-5-2)</strong>: Wider dynamic range for backward gradient passes.<br><br>Scaling values on the fly gives <strong>2x to 3x faster training with zero loss in model accuracy</strong>.`
       },
       {
         speaker: "Harsh Mishra (Part 2)",
         time: "07:00 - 15:30 (8.5 min)",
-        speech: `Compute is useless if Tensor Cores sit starved waiting for memory transfers: <strong>The Memory Wall</strong>.<br><br>DDR5 transfers at 64 GB/s; laptop GDDR6 at 272 GB/s. The H100 SXM5 stacks 3D DRAM dies via Through-Silicon Vias into an ultra-wide <strong>5,120-bit bus: HBM3</strong>.<br><br>Delivering <strong>3,350 GB/s (3.35 TB/s)</strong>—<strong>12.3x faster than consumer GDDR6</strong>—the H100 streams billion-parameter matrices in sub-milliseconds.`
+        speech: `Fast compute is useless if cores sit starved waiting for data: <strong>The Memory Wall</strong>.<br><br>DDR5 moves data at 64 GB/s; laptop GDDR6 at 272 GB/s. The H100 SXM5 stacks 3D memory chips next to the die using microscopic vertical pins, creating an ultra-wide <strong>5,120-bit bus called HBM3</strong>.<br><br>Delivering <strong>3,350 GB/s (3.35 TB/s)</strong>—<strong>12.3x faster than our laptop GPU</strong>—the H100 streams billion-parameter matrices in sub-milliseconds.`
       },
       {
         speaker: "Harsh Mishra (Part 2)",
         time: "07:00 - 15:30 (8.5 min)",
-        speech: `When scaling beyond 1 GPU to train 70B+ models, PCIe Gen 5 bottlenecks at 64 GB/s.<br><br>Hopper integrates <strong>NVLink 4 delivering 900 GB/s bidirectional bandwidth per GPU (14x faster than PCIe Gen 5)</strong>. Connected via on-chassis NVSwitches, all 8 GPUs communicate at wire speed.<br><br>The node acts as a <strong>single, unified 640-Gigabyte super-device</strong>. Mirza Saad Beg will now present the cloud infrastructure layer.`
+        speech: `When scaling beyond 1 GPU to train 70B+ models, standard PCIe slots bottleneck at 64 GB/s.<br><br>Hopper integrates <strong>NVLink 4 delivering 900 GB/s speed between GPUs (14x faster than PCIe Gen 5)</strong>. Combined with on-motherboard NVSwitch chips, all 8 GPUs talk at full wire speed.<br><br>The server acts as a <strong>single unified 640 GB supercomputer</strong>. Mirza Saad Beg will now present the cloud systems layer.`
       },
       {
         speaker: "Mirza Saad Beg (Part 3)",
         time: "15:30 - 23:00 (7.5 min)",
-        speech: `Thank you, Harsh. Deploying AI on traditional clouds (AWS/GCP) imposes severe DevOps friction: kernel mismatches, CUDA mismatches, Dockerfiles, and Kubernetes YAML. Forgetting an idle VM costs hundreds of dollars.<br><br><strong>Lightning AI eliminates this abstraction tax</strong> with <strong>Cloud Studios</strong>: self-contained environments booting in under 30 seconds with pre-configured CUDA 12.1 and persistent NVMe storage.`
+        speech: `Thank you, Harsh. Deploying AI on traditional clouds (AWS/GCP) creates huge setup friction: driver errors, CUDA mismatches, Docker containers, and complex Kubernetes files. Leaving an idle GPU on costs hundreds of dollars.<br><br><strong>Lightning AI removes these headaches</strong> with <strong>Cloud Studios</strong>: browser environments booting in under 30 seconds with pre-configured CUDA 12.1 and persistent storage.`
       },
       {
         speaker: "Mirza Saad Beg (Part 3)",
         time: "15:30 - 23:00 (7.5 min)",
-        speech: `The operational superpower is <strong>Dynamic Cloud Elasticity</strong>.<br><br>Write code and preprocess data on a <strong>Free 4-Core CPU Studio ($0.00/hr)</strong>. When ready, switch to <strong>NVIDIA H100</strong>. In under 30 seconds, your container and files remount with 80GB HBM3 online without closing terminal tabs.<br><br>Run fine-tuning for 10 minutes, then pause or switch back to Free CPU. Total cost: 50 cents (₹42 INR)!`
+        speech: `The best feature is <strong>Dynamic Hardware Elasticity</strong>.<br><br>Write and test code on a <strong>Free 4-Core CPU Studio ($0.00/hr)</strong>. When ready, switch to <strong>NVIDIA H100</strong>. In under 30 seconds, your files and terminal tabs move over to an active 80GB H100 node.<br><br>Run your training for 10 minutes, then switch back to Free CPU. Total cost: 50 cents (₹42 INR)!`
       },
       {
         speaker: "Mirza Saad Beg (Part 3)",
         time: "15:30 - 23:00 (7.5 min)",
-        speech: `To scale across nodes, we use <strong>DDP vs FSDP</strong>:<br><br>• <strong>DDP</strong> replicates the model across all GPUs and synchronizes gradients via All-Reduce over NVLink. Model must fit in single-GPU VRAM (<80GB).<br>• <strong>FSDP</strong> shards weights, gradients, and optimizer states across all GPUs. Layer weights are fetched just-in-time over 900 GB/s NVLink and immediately freed, enabling 70B+ parameter training without OOM. Ameer Hamza will now lead the live demo.`
+        speech: `To scale across multiple GPUs, engineers use <strong>DDP vs FSDP</strong>:<br><br>• <strong>DDP</strong> copies the full model onto every GPU and syncs updates over NVLink. The model must fit in single-GPU VRAM (<80GB).<br>• <strong>FSDP</strong> splits model weights, gradients, and optimizer across all GPUs. Layers are fetched over NVLink right when needed and freed immediately, letting you train 70B+ models without running out of memory. Ameer will now lead the live demo.`
       },
       {
         speaker: "Ameer Hamza (Live Demo)",
         time: "23:00 - 36:00 (13.0 min)",
-        speech: `Thank you, Saad. Respected faculty, welcome to our live empirical showdown:<br><br>• <strong>Team Red</strong>: RTX 4060 Laptop (8 GB GDDR6, 128-bit, 272 GB/s, 115W TGP).<br>• <strong>Team Green</strong>: Cloud NVIDIA H100 SXM5 (80 GB HBM3, 5,120-bit, 3,350 GB/s, 700W TGP).<br><br>Allocating a 12GB activation crashes Team Red at 100% saturation; Team Green executes with 68 GB free headroom. Let's execute our 4 live scripts in the terminal.`
+        speech: `Thank you, Saad. Welcome to our live hardware showdown:<br><br>• <strong>Team Red</strong>: RTX 4060 Laptop (8 GB GDDR6, 128-bit, 272 GB/s, 115W TGP).<br>• <strong>Team Green</strong>: Cloud NVIDIA H100 (80 GB HBM3, 5,120-bit, 3,350 GB/s, 700W TGP).<br><br>Allocating a 12GB activation crashes Team Red at 100% capacity; Team Green runs easily with 68 GB free headroom. Let's run our 4 live scripts in the terminal.`
       },
       {
         speaker: "Ameer Hamza (Live Demo)",
         time: "23:00 - 36:00 (13.0 min)",
-        speech: `Empirical findings across our 4 live tests:<br><br>• <strong>Exp 1 (VRAM Wall)</strong>: 12GB allocation crashes RTX 4060 with CUDA OOM; succeeds in 144ms on H100 with 67 GB free.<br>• <strong>Exp 2 (3B Fine-Tuning)</strong>: 332 QA pairs take 64s on laptop (Batch 1, 5.4 smp/s) vs <strong>2.3s on H100 (Batch 16, 147.1 smp/s) — 27.8x speedup!</strong><br>• <strong>Exp 4 (16-User Serving)</strong>: 25.7s serial queuing on laptop vs <strong>1.35s on H100 (1,480+ tok/s) — 19.7x concurrency!</strong>`
+        speech: `Empirical findings across our 4 live tests:<br><br>• <strong>Exp 1 (VRAM Wall)</strong>: 12GB allocation crashes RTX 4060 with CUDA OOM; finishes in 144ms on H100 with 67 GB free.<br>• <strong>Exp 2 (3B Fine-Tuning)</strong>: 332 QA pairs take 64s on laptop (Batch 1, 5.4 smp/s) vs <strong>2.3s on H100 (Batch 16, 147.1 smp/s) — 27.8x speedup!</strong><br>• <strong>Exp 4 (16-User Serving)</strong>: 25.7s serial queuing on laptop vs <strong>1.35s on H100 (1,480+ tok/s) — 19.7x concurrency!</strong>`
       },
       {
         speaker: "Harshit Tandon (Part 5)",
         time: "36:00 - 41:00 (5.0 min)",
-        speech: `Thank you, Ameer. Respected faculty, why didn't we use AWS or Google Cloud?<br><br>Because traditional hyperscalers enforce the <strong>Quota Approval Bottleneck</strong>: default 0 GPU quota, mandatory bundling of 8x H100 nodes ($88–$98/hr), and rigid multi-year contracts requiring $50k+ upfront.<br><br><strong>Lightning AI democratizes compute</strong>: fractional 1x H100 GPUs at <strong>~$3.00/hr</strong>, zero sales gatekeeping, and instant 30-second access.`
+        speech: `Thank you, Ameer. Why didn't we use AWS or Google Cloud?<br><br>Because traditional hyperscalers enforce the <strong>Quota Bottleneck</strong>: default 0 GPU quota, forced renting of entire 8-GPU boxes ($88–$98/hr), and rigid multi-year contracts requiring $50k+ upfront.<br><br><strong>Lightning AI democratizes compute</strong>: offering single H100 GPUs at <strong>~$3.00/hr</strong>, zero sales calls, and instant 30-second access.`
       },
       {
         speaker: "Harshit Tandon (Part 5)",
         time: "36:00 - 41:00 (5.0 min)",
-        speech: `A naive team leaves an 8-GPU node running 24/7, burning <strong>$21,600/month with 60% idle time</strong>.<br><br>Lightning AI's lifecycle scheduling: code on Free CPU ($0.00), burst fine-tune on H100 ($0.50), persistent sleep storage ($0.15/GB-mo). Our 4 live benchmarks cost <strong>less than 15 cents (₹12 INR)</strong>! Ameer will now conclude.`
+        speech: `A team that leaves an 8-GPU box running all month burns <strong>$21,600/month with 60% idle time</strong>.<br><br>With Lightning AI's lifecycle scheduling: write code on Free CPU ($0.00), burst train on H100 ($0.50), keep files in cloud storage. Our 4 live benchmarks cost <strong>less than 15 cents (₹12 INR)</strong>! Ameer will now conclude.`
       },
       {
         speaker: "Ameer Hamza (Host)",
         time: "41:00 - 45:00 (4.0 min)",
-        speech: `To summarize our findings:<br><br>1. <strong>Specialized Silicon is Mandatory</strong>: Tensor Cores, FP8, and HBM3 replace general-purpose CPUs.<br>2. <strong>Memory Bandwidth Governs AI</strong>: 3,350 GB/s HBM3 enables 19.7x faster concurrent serving than GDDR6.<br>3. <strong>Cloud Virtualization Wins</strong>: Lightning AI delivers 30-second studio elasticity.<br>4. <strong>Democratic Economics</strong>: $3.00/hr fractional access replaces $300,000 CapEx.`
+        speech: `To summarize our findings:<br><br>1. <strong>Specialized Hardware is Mandatory</strong>: Tensor Cores, FP8, and HBM3 replace general CPUs.<br>2. <strong>Memory Speed Matters Most</strong>: 3,350 GB/s HBM3 delivers 19.7x faster multi-user serving than laptop GDDR6.<br>3. <strong>Cloud Simplicity Wins</strong>: Lightning AI delivers 30-second ready-to-use studios.<br>4. <strong>Affordable Access</strong>: $3.00/hr access replaces $300,000 purchase costs.`
       },
       {
         speaker: "All Members (Faculty Viva)",
